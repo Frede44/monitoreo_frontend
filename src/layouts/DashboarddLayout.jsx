@@ -24,10 +24,10 @@ export default function DashboardLayout() {
                         Panel
                     </LinkNav>
                     <LinkNav to="/panel/dispositivos" icon={<Cpu className="w-5" />}>
-                        CPU
+                        Dispositivos
                     </LinkNav>
                     <LinkNav to="/panel/usuarios" icon={<User className="w-5" />}>
-                        User
+                        Usuarios
                     </LinkNav>
                 </Nav>
                 <main className="flex-1 overflow-y-auto w-full mx-auto p-2 bg-gray-100">

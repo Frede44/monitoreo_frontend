@@ -23,6 +23,8 @@ export default function Login() {
             const response = await loginApi(email, password);
             const token = response.token || response.access_token;
 
+            
+
             if (!token) {
                 throw new Error('El servidor no devolvió un token válido');
             }
@@ -62,7 +64,7 @@ return (
             </div>
             
             <div className="w-full flex justify-center">
-                <Button type="submit" children="Iniciar Sesión" estile="bg-black hover:bg-gray-800 w-full" />
+                <Button type="submit" children="Iniciar Sesión" estile="bg-black text-white hover:bg-gray-800 w-full" />
             </div>
             {error &&
             <div className="border border-red-500 w-full flex justify-center item-center rounded bg-red-100 p-2">
