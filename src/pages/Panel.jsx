@@ -19,11 +19,11 @@ export function Panel() {
 
             <div className="grid grid-cols-5 gap-4 p-3">
                 {/* Aquí puedes agregar más tarjetas con diferentes métricas o información relevante */}
-                <Cards title="Sensores Activos" value="15" icon={<Activity />} text="Sensores en funcionamiento" color="text-green-500" />
-                <Cards title="Alertas" value="3" icon={<Thermometer />} text="Alertas pendientes" color="text-yellow-500" />
-                <Cards title="Uptime" value="99.8%" icon={<Wind />} text="Tiempo de actividad" color="text-blue-500" />
-                <Cards title="Mantenimiento" value="2" icon={<CloudOff />} text="Equipos en mantenimiento" color="text-orange-500" />
-                <Cards title="Error Rate" value="0.2%" icon={<Zap />} text="Tasa de error" color="text-red-500" />
+                <Cards title="Dispositivos" value="15" icon={<Activity />} text="Dispositivos en funcionamiento" color="text-green-500" />
+                <Cards title="Temperatura" value="3" icon={<Thermometer />} text="Promedio de temperatura" color="text-yellow-500" />
+                <Cards title="CO2" value="99.8%" icon={<Wind />} text="Nivel de dióxido de carbono" color="text-blue-500" />
+                <Cards title="PM2.5" value="2" icon={<CloudOff />} text="Partículas en suspensión" color="text-orange-500" />
+                <Cards title="Voltaje" value="0.2%" icon={<Zap />} text="Tasa de error eléctrico" color="text-red-500" />
 
             </div>
 
