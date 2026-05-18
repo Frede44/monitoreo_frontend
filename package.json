@@ -12,12 +12,16 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@laravel/echo-react": "^2.3.3",
     "@mui/material": "^9.0.1",
     "@mui/x-charts": "^9.1.0",
     "@tailwindcss/vite": "^4.2.4",
+    "laravel-echo": "^2.3.4",
     "lucide-react": "^1.14.0",
+    "pusher-js": "^8.5.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-pusher": "^0.2.0",
     "react-router-dom": "^7.15.0",
     "tailwindcss": "^4.2.4"
   },
