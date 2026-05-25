@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Button from "./Button";
-import View from "./View";
-import { guardarUsuarioApi, getRolesApi } from "../services/userService";
+import Button from "../Button";
+import View from "../View";
+import { guardarUsuarioApi, getRolesApi } from "../../services/userService";
 
 export default function DialogUsuarios({isOpen, onClose, onDispositivoAgregado}) {
     const [name, setName] = useState('');

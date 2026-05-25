@@ -2,7 +2,7 @@
 import { Outlet, } from 'react-router-dom';
 import Headers from '../components/Headers';
 import Nav from '../components/Nav';
-import { LayoutPanelLeft, Cpu, User } from 'lucide-react';
+import { LayoutPanelLeft, Cpu, User, Bell} from 'lucide-react';
 import LinkNav from '../components/LinkNav';
 
 
@@ -28,6 +28,9 @@ export default function DashboardLayout() {
                     </LinkNav>
                     <LinkNav to="/panel/usuarios" icon={<User className="w-5" />}>
                         Usuarios
+                    </LinkNav>
+                    <LinkNav to="/panel/alertas" icon={<Bell className="w-5" />}>
+                        Alertas
                     </LinkNav>
                 </Nav>
                 <main className="flex-1 overflow-y-auto w-full mx-auto p-2 bg-gray-100">

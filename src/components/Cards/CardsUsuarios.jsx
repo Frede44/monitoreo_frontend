@@ -1,5 +1,5 @@
 import { Trash2, Users,SquarePen, Shield } from "lucide-react";
-import Button from "./Button";
+import Button from "../Button";
 
 export default function CardsUsuarios({ nombre, email, rol, fechaCreacion, onClickEditar }) {
 

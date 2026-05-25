@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
-import CardsDispositivos from "../components/CardsDispositivos";
+import CardsDispositivos from "../components/Cards/CardsDispositivos";
 import { getDispositivosApi } from "../services/getDispositivos";
-import DialogDispositivos from "../components/DialogDispositivos";
-import DialogDispositivosEdit from "../components/DialogDispositivoEdit";
+import DialogDispositivos from "../components/Dialog/DialogDispositivos";
+import DialogDispositivosEdit from "../components/Dialog//DialogDispositivoEdit";
 
 export default function Dispositivos() {
     const [dispositivos, setDispositivos] = useState([]);

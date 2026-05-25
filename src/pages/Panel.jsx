@@ -3,25 +3,16 @@ import { Activity, Thermometer, Wind, CloudOff, Zap } from "lucide-react";
 import { Cards } from "../components/Cards";
 import View from "../components/View";
 import Monitor from "../components/Monitor";
-import Echo from "laravel-echo";
-import Pusher from 'pusher-js';
-
-window.Pusher = Pusher;
-
-// Configuración de Echo (apuntando a tu servidor Reverb o Pusher)
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    forceTLS: true
-});
 
 export function Panel() {
 
     const [datosSensores, setDatosSensores] = useState({
-        valor: 0,
-        tipo_metrica_id: 0,
+        1: 0, // Temperatura
+        2: 0, // Humedad
+        3: 0, // Presión
+        4: 0  // Calidad del Aire
     });
+
 
 
        useEffect(() => {
@@ -29,25 +20,33 @@ export function Panel() {
         window.Echo.channel('dashboard-ambiental')
             // 👇 AGREGA EL PUNTO AQUÍ 👇
             .listen('.nuevos-datos', (e) => {
-                setDatosSensores(prevDatos => {
-                    let nuevosDatos = { ...prevDatos };
+                console.log('Datos recibidos del backend:', e);
+                if (e.metricas && Array.isArray(e.metricas)) {
+                    setDatosSensores(prevDatos => {
+                        const nuevosDatos = { ...prevDatos };
+                        e.metricas.forEach(metrica => {
+                            nuevosDatos[metrica.tipo_metrica_id] = Number(metrica.valor);
+                        });
+                        return nuevosDatos;
+                    });
+                }
+            });
 
-                    // Aquí debes mapear los datos que recibes del evento a tu estado
-                    // Por ejemplo, si el evento tiene un campo 'valor' y 'tipo_metrica_id':
-                    nuevosDatos.valor = e.valor; // Ajusta esto según la estructura de tu evento
-                    nuevosDatos.tipo_metrica_id = e.tipo_metrica_id; // Ajusta esto según la estructura de tu evento
-                    
-                    console.log('Datos actualizados:', e);
-                    return nuevosDatos;
-                });
+        // Escuchamos el canal de alertas
+        window.Echo.channel('channel-alerta')
+            .listen('.alerta-datos', (e) => {
+                console.log('Alerta recibida del backend:', e.alerta);
             });
 
         return () => {
             window.Echo.leaveChannel('dashboard-ambiental');
+            window.Echo.leaveChannel('channel-alerta');
         };
     }, []);
 
     console.log('Datos actuales del sensor:', datosSensores);
+
+     
 
     return (
         <div className="w-full h-full flex flex-col ">
@@ -65,19 +64,19 @@ export function Panel() {
             <div className="grid grid-cols-5 gap-4 p-3">
                 {/* Aquí puedes agregar más tarjetas con diferentes métricas o información relevante */}
                 <Cards title="Dispositivos" value="15" icon={<Activity />} text="Dispositivos en funcionamiento" color="text-green-500" />
-                <Cards title="Temperatura" value={datosSensores.valor} icon={<Thermometer />} text="Promedio de temperatura" color="text-yellow-500" />
-                <Cards title="CO2" value="99.8%" icon={<Wind />} text="Nivel de dióxido de carbono" color="text-blue-500" />
-                <Cards title="PM2.5" value="2" icon={<CloudOff />} text="Partículas en suspensión" color="text-orange-500" />
-                <Cards title="Voltaje" value="0.2%" icon={<Zap />} text="Tasa de error eléctrico" color="text-red-500" />
+                <Cards title="Temperatura" value={`${datosSensores[1] ?? 0} °C`} icon={<Thermometer />} text="Promedio de temperatura" color="text-yellow-500" />
+                <Cards title="Humedad" value={`${datosSensores[2] ?? 0} %`} icon={<Wind />} text="Nivel de humedad" color="text-blue-500" />
+                <Cards title="Presión" value={`${datosSensores[3] ?? 0} hPa`} icon={<CloudOff />} text="Presión atmosférica" color="text-orange-500" />
+                <Cards title="Calidad del Aire" value={`${datosSensores[4] ?? 0} AQI`} icon={<Zap />} text="Índice de calidad del aire" color="text-red-500" />
 
             </div>
 
             <View title="Monitoreo en tiempo real" text="Valores actuales del dispositivo seleccionado" estilos="   flex flex-row justify-between">
                 {/* Aquí puedes agregar gráficos o tablas para mostrar datos más detallados */}
-                <Monitor valor={datosSensores.valor} maxValor={100} unidad="°C" magnitud="Temperatura" />
-                <Monitor valor={100} maxValor={100} unidad="°C" magnitud="Temperatura" />
-                <Monitor valor={100} maxValor={100} unidad="°C" magnitud="Temperatura" />
-                <Monitor valor={100} maxValor={100} unidad="°C" magnitud="Temperatura" />
+                <Monitor valor={datosSensores[1] ?? 0} maxValor={100} unidad="°C" magnitud="Temperatura" />
+                <Monitor valor={datosSensores[2] ?? 0} maxValor={100} unidad="%" magnitud="Humedad" />
+                <Monitor valor={datosSensores[3] ?? 0} maxValor={100} unidad="hPa" magnitud="Presión" />
+                <Monitor valor={datosSensores[4] ?? 0} maxValor={100} unidad="AQI" magnitud="Calidad del Aire" />
             </View>
 
             <div className="flex flex-row">

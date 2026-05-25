@@ -1,5 +1,5 @@
 import {  Cpu, Trash2, SquarePen, Wifi  } from 'lucide-react';
-import Button from './Button';
+import Button from '../Button';
 
 export default function CardsDispositivos({nombre, ubicacion, mac, token, estado, onClickEditar}) {
     return(

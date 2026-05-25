@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { editarUsuarioApi, getRolesApi } from "../services/userService";
-import Button from "./Button";
-import View from "./View";
+import { editarUsuarioApi, getRolesApi } from "../../services/userService";
+import Button from "../Button";
+import View from "../View";
 
 export default function DialogUsuarioEdit({ isOpen, onClose, onUsuarioEditado, id, usuario }) {
     const [name, setName] = useState('');

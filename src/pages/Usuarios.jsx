@@ -1,11 +1,11 @@
 import Button from "../components/Button";
-import CardsUsuarios from "../components/CardsUsuarios";
+import CardsUsuarios from "../components/Cards/CardsUsuarios";
 import View from "../components/View";
 import { useNavigate } from "react-router-dom";
 import { getUserInfoApi } from "../services/userService";
 import { useState, useEffect } from "react";
-import DialogUsuarios from "../components/DialogUsuarios";
-import DialogUsuarioEdit from "../components/DialogUsuarioEdit";
+import DialogUsuarios from "../components/Dialog/DialogUsuarios";
+import DialogUsuarioEdit from "../components/Dialog/DialogUsuarioEdit";
 
 export default function Usuarios() {
     const [usuarios, setUsuarios] = useState([]);

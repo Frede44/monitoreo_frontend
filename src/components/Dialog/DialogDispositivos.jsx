@@ -1,37 +1,34 @@
-import { useState, useEffect } from "react";
-import Button from "./Button";
-import View from "./View";
-import { editarDispositivoApi } from "../services/guardarDispositivo";
+import { useState } from "react";
+import Button from "../Button";
+import View from "../View";
+import { guardarDispositivoApi } from "../../services/guardarDispositivo";
 
-export default function DialogDispositivosEdit({isOpen, onClose, onDispositivoAgregado, id, dispositivo}) {
+export default function DialogDispositivos({isOpen, onClose, onDispositivoAgregado}) {
     const [nombre, setNombre] = useState('');
     const [ubicacion, setUbicacion] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        if (dispositivo && dispositivo.dispositivo) {
-            setNombre(dispositivo.dispositivo.nombre || '');
-            setUbicacion(dispositivo.dispositivo.ubicacion || '');
-        }
-    }, [dispositivo]);
-
     if (!isOpen) return null;
-  
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         try {
-
-            
-            const respuesta = await editarDispositivoApi(id, { nombre, ubicacion });
+            const respuesta = await guardarDispositivoApi({ nombre, ubicacion });
+            console.log("Respuesta del backend:", respuesta);
+            // Guardamos el token en localStorage (ajusta la ruta del token según la respuesta real de tu backend)
+            const token = respuesta?.token || respuesta?.dispositivo?.token;
+            if (token) {
+                localStorage.setItem(`token_dispositivo_${nombre}`, token);
+            }
 
             onClose();
             if (onDispositivoAgregado) {
                 onDispositivoAgregado();
             }
         } catch (error) {
-            console.error("Error al editar dispositivo:", error);
-            alert("Ocurrió un error al editar el dispositivo.");
+            console.error("Error al guardar dispositivo:", error);
+            alert("Ocurrió un error al guardar el dispositivo.");
         } finally {
             setIsLoading(false);
             setNombre('');
@@ -42,7 +39,7 @@ export default function DialogDispositivosEdit({isOpen, onClose, onDispositivoAg
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center " onClick={onClose}>
             <div onClick={(e) => e.stopPropagation()}>
-                <View title="Editar Dispositivo" text="Ingrese los detalles del dispositivo" estilos="w-96 p-6" >
+                <View title="Agregar Dispositivo" text="Ingrese los detalles del nuevo dispositivo" estilos="w-96 p-6" >
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label htmlFor="nombre" className="block text-gray-700 font-bold ">Nombre del Dispositivo</label>
@@ -54,7 +51,7 @@ export default function DialogDispositivosEdit({isOpen, onClose, onDispositivoAg
                         </div>
                         <div className="flex justify-end gap-2 mb-4">
                             <button type="button" onClick={onClose} className="bg-white hover:bg-gray-200 text-gray-800  py-2 px-4 rounded border" disabled={isLoading}>Cancelar</button>
-                            <Button type="submit" children={isLoading ? "Guardando..." : "Editar "} estile={`${isLoading ? 'bg-gray-500' : 'bg-black hover:bg-gray-700'} text-white  py-2 px-4 rounded`} disabled={isLoading} />
+                            <Button type="submit" children={isLoading ? "Guardando..." : "Agregar "} estile={`${isLoading ? 'bg-gray-500' : 'bg-black hover:bg-gray-700'} text-white  py-2 px-4 rounded`} disabled={isLoading} />
                         </div>
                     </form>
                 </View>
