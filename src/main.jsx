@@ -14,11 +14,11 @@ window.Pusher = Pusher;
 window.Echo = new Echo({
     broadcaster: 'reverb',
     // Usamos las variables que vi en tu foto del .env de React
-    key: import.meta.env.VITE_PUSHER_APP_KEY, 
-    wsHost: import.meta.env.VITE_PUSHER_HOST,
-    wsPort: import.meta.env.VITE_PUSHER_PORT ?? 8080,
-    wssPort: import.meta.env.VITE_PUSHER_PORT ?? 8080,
-    forceTLS: import.meta.env.VITE_PUSHER_SCHEME === 'https',
+    key: import.meta.env.VITE_REVERB_APP_KEY, 
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
+    forceTLS: import.meta.env.VITE_REVERB_SCHEME === 'https',
     enabledTransports: ['ws', 'wss'],
 });
 

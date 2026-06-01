@@ -20,3 +20,24 @@ export const getDispositivosApi = async () => {
         throw error;
     }
 }
+
+export const getCountDispositivosApi = async () => {
+    try {
+        const response = await fetch(`${API_URL}/dispositivos/count`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Error al obtener el conteo de dispositivos');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error al obtener el conteo de dispositivos:', error);
+        throw error;
+    }
+}

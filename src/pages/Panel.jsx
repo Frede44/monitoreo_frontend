@@ -3,6 +3,7 @@ import { Activity, Thermometer, Wind, CloudOff, Zap } from "lucide-react";
 import { Cards } from "../components/Cards";
 import View from "../components/View";
 import Monitor from "../components/Monitor";
+import { getCountDispositivosApi } from '../services/getDispositivos';
 
 export function Panel() {
 
@@ -12,6 +13,9 @@ export function Panel() {
         3: 0, // Presión
         4: 0  // Calidad del Aire
     });
+    const [countDispositivos, setCountDispositivos] = useState(0);
+
+
 
 
 
@@ -45,8 +49,21 @@ export function Panel() {
     }, []);
 
     console.log('Datos actuales del sensor:', datosSensores);
+        
+    
+    const fetchCount = async () => {
+            try {
+                const count = await getCountDispositivosApi();
+                setCountDispositivos(count);
+                console.log('Conteo de dispositivos obtenido:', count);
+            } catch (error) {
+                console.error('Error al obtener el conteo de dispositivos:', error);
+            }
+        };
 
-     
+    useEffect(() => {
+        fetchCount();
+    }, []);
 
     return (
         <div className="w-full h-full flex flex-col ">
@@ -63,7 +80,7 @@ export function Panel() {
 
             <div className="grid grid-cols-5 gap-4 p-3">
                 {/* Aquí puedes agregar más tarjetas con diferentes métricas o información relevante */}
-                <Cards title="Dispositivos" value="15" icon={<Activity />} text="Dispositivos en funcionamiento" color="text-green-500" />
+                <Cards title="Dispositivos" value={countDispositivos.count} icon={<Activity />} text="Dispositivos en funcionamiento" color="text-green-500" />
                 <Cards title="Temperatura" value={`${datosSensores[1] ?? 0} °C`} icon={<Thermometer />} text="Promedio de temperatura" color="text-yellow-500" />
                 <Cards title="Humedad" value={`${datosSensores[2] ?? 0} %`} icon={<Wind />} text="Nivel de humedad" color="text-blue-500" />
                 <Cards title="Presión" value={`${datosSensores[3] ?? 0} hPa`} icon={<CloudOff />} text="Presión atmosférica" color="text-orange-500" />
