@@ -29,7 +29,8 @@ export default function DialogUsuarios({isOpen, onClose, onDispositivoAgregado})
             alert("Ocurrió un error al guardar el usuario.");
         } finally {
             setIsLoading(false);
-            setNombre('');
+            setName('');
+            setEmail('');
             setRole('');
             setPassword('');
         }

@@ -9,6 +9,7 @@ import Button from "../components/Button";
 
 export default function Login() {
     const [email, setEmail] = useState("")
+    const [user, setUser] = useState(null)
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
     const navigate = useNavigate()
@@ -23,7 +24,7 @@ export default function Login() {
             const response = await loginApi(email, password);
             const token = response.token || response.access_token;
 
-            
+            setUser(response.user);
 
             if (!token) {
                 throw new Error('El servidor no devolvió un token válido');

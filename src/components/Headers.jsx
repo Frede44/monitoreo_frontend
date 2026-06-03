@@ -24,7 +24,7 @@ export default function Headers() {
             <div className='flex flex-row justify-center items-center gap-4 '>
                 <div className='text-black text-right'>
                     <p>
-                        {user.user_data}
+                        {user?.user_data?.name}
                     </p>
                     <p>
                          {user.role}

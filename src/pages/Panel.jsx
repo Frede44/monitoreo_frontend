@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Activity, Thermometer, Wind, CloudOff, Zap } from "lucide-react";
+import { ComparacionDispositivosChart, CalidadAireChart, TemperaturaCO2Chart, ParticulasChart, COChart, VoltajeHumedadChart } from '../components/DashboardCharts';
+import { Activity, Thermometer, Wind, CloudOff, Zap, AlertTriangle } from "lucide-react";
 import { Cards } from "../components/Cards";
 import View from "../components/View";
 import Monitor from "../components/Monitor";
 import { getCountDispositivosApi } from '../services/getDispositivos';
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 
 export function Panel() {
-
     const [datosSensores, setDatosSensores] = useState({
         1: 0, // Temperatura
         2: 0, // Humedad
@@ -14,14 +18,42 @@ export function Panel() {
         4: 0  // Calidad del Aire
     });
     const [countDispositivos, setCountDispositivos] = useState(0);
+    const { user } = useContext(AuthContext);
+    const token = localStorage.getItem('auth_token');
 
+    // 👇 1. Importar Echo y Pusher
 
+    useEffect(() => {
+        if (!token || !user?.user_data?.id) return;
 
+        console.log('Usuario autenticado:', user.user_data.id);
 
+        // 👇 2. Asignar Pusher a window
+        window.Pusher = Pusher;
 
-       useEffect(() => {
+        // 👇 3. Configurar la conexión hacia tu Laravel Reverb
+        window.Echo = new Echo({
+            broadcaster: 'reverb',
+            // Usamos las variables que vi en tu foto del .env de React
+            key: import.meta.env.VITE_REVERB_APP_KEY, 
+            wsHost: import.meta.env.VITE_REVERB_HOST,
+            wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
+            wssPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
+            forceTLS: import.meta.env.VITE_REVERB_SCHEME === 'https',
+            enabledTransports: ['ws', 'wss'],
+
+            authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
+
+            auth: {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json',
+                }
+            }
+        });
+
         // Escuchamos el canal
-        window.Echo.channel('dashboard-ambiental')
+        window.Echo.private(`user.${user.user_data.id}`)
             // 👇 AGREGA EL PUNTO AQUÍ 👇
             .listen('.nuevos-datos', (e) => {
                 console.log('Datos recibidos del backend:', e);
@@ -37,16 +69,17 @@ export function Panel() {
             });
 
         // Escuchamos el canal de alertas
-        window.Echo.channel('channel-alerta')
+        window.Echo.private(`user.${user.user_data.id}`)
             .listen('.alerta-datos', (e) => {
                 console.log('Alerta recibida del backend:', e.alerta);
             });
 
         return () => {
-            window.Echo.leaveChannel('dashboard-ambiental');
-            window.Echo.leaveChannel('channel-alerta');
+            if (window.Echo) {
+                window.Echo.leaveChannel(`private-user.${user.user_data.id}`);
+            }
         };
-    }, []);
+    }, [user, token]);
 
     console.log('Datos actuales del sensor:', datosSensores);
         
@@ -96,37 +129,110 @@ export function Panel() {
                 <Monitor valor={datosSensores[4] ?? 0} maxValor={100} unidad="AQI" magnitud="Calidad del Aire" />
             </View>
 
-            <div className="flex flex-row">
+            <div className="grid grid-cols-2 gap-4 p-3">
                 <View title="Comparación entre Dispositivos" text="Valores actuales de todos los sensores activos">
-
+                    <ComparacionDispositivosChart />
                 </View>
 
                 <View title="Calidad del Aire" text="Análisis radar de parámetros ambientales">
-
-                </View>
-            </div>
-            <div className="flex flex-row">
-                <View title="Comparación entre Dispositivos" text="Valores actuales de todos los sensores activos">
-
-                </View>
-
-                <View title="Calidad del Aire" text="Análisis radar de parámetros ambientales">
-
-                </View>
-            </div>
-            <div className="flex flex-row">
-                <View title="Comparación entre Dispositivos" text="Valores actuales de todos los sensores activos">
-
-                </View>
-
-                <View title="Calidad del Aire" text="Análisis radar de parámetros ambientales">
-
+                    <CalidadAireChart />
                 </View>
             </div>
 
-            <View title="Comparación entre Dispositivos" text="Valores actuales de todos los sensores activos">
+            <div className="grid grid-cols-2 gap-4 p-3">
+                <View title="Temperatura y CO₂ - Tendencia" text="Evolución temporal de variables">
+                    <TemperaturaCO2Chart />
+                </View>
 
-            </View>
+                <View title="Partículas en Suspensión" text="PM2.5 y PM10 en el tiempo">
+                    <ParticulasChart />
+                </View>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 p-3">
+                <View title="Monóxido de Carbono (CO)" text="Niveles de CO en partes por millón">
+                    <COChart />
+                </View>
+
+                <View title="Voltaje y Humedad" text="Monitoreo de energía y humedad relativa">
+                    <VoltajeHumedadChart />
+                </View>
+            </div>
+
+            <div className="p-3">
+                <View title="Estado de Dispositivos" text="Lecturas actuales de todos los sensores">
+                    <div className="flex flex-col gap-4 mt-4">
+                        {/* Device 1 */}
+                        <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
+                            <div className="flex flex-col">
+                                <h3 className="font-bold text-lg">Sensor Oficina Principal</h3>
+                                <p className="text-sm text-gray-500">Planta 1 - Oficina 101</p>
+                                <div className="flex gap-6 mt-3">
+                                    <div className="flex items-center gap-1 text-sm"><Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">27.1°C</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Wind size={16} className="text-green-500" /> CO₂: <span className="font-bold">554 ppm</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><AlertTriangle size={16} className="text-red-500" /> CO: <span className="font-bold">20.6 ppm</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-orange-500" /> PM2.5: <span className="font-bold">6 µg/m³</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-pink-500" /> PM10: <span className="font-bold">18 µg/m³</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Activity size={16} className="text-blue-400" /> Humedad: <span className="font-bold">68%</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Zap size={16} className="text-purple-500" /> Voltaje: <span className="font-bold">5.04V</span></div>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-2">Última lectura: 01/06/2026, 22:13</p>
+                            </div>
+                            <div>
+                                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">online</span>
+                            </div>
+                        </div>
+
+                        {/* Device 2 */}
+                        <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
+                            <div className="flex flex-col">
+                                <h3 className="font-bold text-lg">Sensor Sala de Servidores</h3>
+                                <p className="text-sm text-gray-500">Sótano - Datacenter</p>
+                                <div className="flex gap-6 mt-3">
+                                    <div className="flex items-center gap-1 text-sm"><Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">22.6°C</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Wind size={16} className="text-green-500" /> CO₂: <span className="font-bold">734 ppm</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><AlertTriangle size={16} className="text-red-500" /> CO: <span className="font-bold">10 ppm</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-orange-500" /> PM2.5: <span className="font-bold">9 µg/m³</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-pink-500" /> PM10: <span className="font-bold">68 µg/m³</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Activity size={16} className="text-blue-400" /> Humedad: <span className="font-bold">52%</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Zap size={16} className="text-purple-500" /> Voltaje: <span className="font-bold">5.09V</span></div>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-2">Última lectura: 01/06/2026, 22:00</p>
+                            </div>
+                            <div>
+                                <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold">warning</span>
+                            </div>
+                        </div>
+
+                        {/* Device 3 */}
+                        <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
+                            <div className="flex flex-col">
+                                <h3 className="font-bold text-lg">Sensor Laboratorio</h3>
+                                <p className="text-sm text-gray-500">Planta 2 - Lab A</p>
+                                <div className="flex gap-6 mt-3">
+                                    <div className="flex items-center gap-1 text-sm"><Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">18.8°C</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Wind size={16} className="text-green-500" /> CO₂: <span className="font-bold">638 ppm</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><AlertTriangle size={16} className="text-red-500" /> CO: <span className="font-bold">10.4 ppm</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-orange-500" /> PM2.5: <span className="font-bold">3 µg/m³</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-pink-500" /> PM10: <span className="font-bold">68 µg/m³</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Activity size={16} className="text-blue-400" /> Humedad: <span className="font-bold">69%</span></div>
+                                    <div className="flex items-center gap-1 text-sm"><Zap size={16} className="text-purple-500" /> Voltaje: <span className="font-bold">4.95V</span></div>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-2">Última lectura: 01/06/2026, 22:14</p>
+                            </div>
+                            <div>
+                                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">online</span>
+                            </div>
+                        </div>
+                        
+                        {/* Offline devices message */}
+                        <div className="bg-red-50 text-red-500 border border-red-200 rounded-lg p-3 w-full">
+                            <h4 className="font-bold">Dispositivos Fuera de Línea</h4>
+                            <p className="text-sm">Sensor Almacén - Planta Baja - Almacén</p>
+                        </div>
+                    </div>
+                </View>
+            </div>
         </div>
     )
 }

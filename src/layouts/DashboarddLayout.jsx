@@ -2,7 +2,7 @@
 import { Outlet, } from 'react-router-dom';
 import Headers from '../components/Headers';
 import Nav from '../components/Nav';
-import { LayoutPanelLeft, Cpu, User, Bell} from 'lucide-react';
+import { LayoutPanelLeft, Cpu, User, Bell, FlaskConical} from 'lucide-react';
 import LinkNav from '../components/LinkNav';
 
 
@@ -31,6 +31,9 @@ export default function DashboardLayout() {
                     </LinkNav>
                     <LinkNav to="/panel/alertas" icon={<Bell className="w-5" />}>
                         Alertas
+                    </LinkNav>
+                    <LinkNav to="/panel/metricas" icon={<FlaskConical className="w-5" />}>
+                        Métricas
                     </LinkNav>
                 </Nav>
                 <main className="flex-1 overflow-y-auto w-full mx-auto p-2 bg-gray-100">
