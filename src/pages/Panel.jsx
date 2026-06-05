@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ComparacionDispositivosChart, CalidadAireChart, TemperaturaCO2Chart, ParticulasChart, COChart, VoltajeHumedadChart } from '../components/DashboardCharts';
 import { Activity, Thermometer, Wind, CloudOff, Zap, AlertTriangle } from "lucide-react";
 import { Cards } from "../components/Cards";
 import View from "../components/View";
 import Monitor from "../components/Monitor";
-import { getCountDispositivosApi } from '../services/getDispositivos';
+import { getCountDispositivosApi, getDispositivosApi } from '../services/getDispositivos';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
 import Echo from 'laravel-echo';
@@ -17,9 +17,20 @@ export function Panel() {
         3: 0, // Presión
         4: 0  // Calidad del Aire
     });
+
+    const [datos, setDatos] = useState([]);
+    const [historialLecturas, setHistorialLecturas] = useState([]);
+    const [datosDispositivos, setDatosDispositivos] = useState([]);
     const [countDispositivos, setCountDispositivos] = useState(0);
+    const [dispositivo, setDispositivo] = useState(null);
+    const dispositivoRef = useRef(dispositivo);
     const { user } = useContext(AuthContext);
     const token = localStorage.getItem('auth_token');
+
+    useEffect(() => {
+        dispositivoRef.current = dispositivo;
+    }, [dispositivo]);
+    
 
     // 👇 1. Importar Echo y Pusher
 
@@ -57,14 +68,57 @@ export function Panel() {
             // 👇 AGREGA EL PUNTO AQUÍ 👇
             .listen('.nuevos-datos', (e) => {
                 console.log('Datos recibidos del backend:', e);
-                if (e.metricas && Array.isArray(e.metricas)) {
-                    setDatosSensores(prevDatos => {
-                        const nuevosDatos = { ...prevDatos };
-                        e.metricas.forEach(metrica => {
-                            nuevosDatos[metrica.tipo_metrica_id] = Number(metrica.valor);
-                        });
+                
+                // Actualizamos los datos para la gráfica (mantenemos array de dispositivos)
+                setDatos((prevDatos) => {
+                    // Nota: el backend envía 'dispositivo' en singular según el log
+                    const idNuevo = e.datos?.dispositivo?.id;
+                    const index = prevDatos.findIndex(item => item.datos?.dispositivo?.id === idNuevo);
+                    if (index !== -1) {
+                        const nuevosDatos = [...prevDatos];
+                        nuevosDatos[index] = e;
                         return nuevosDatos;
-                    });
+                    }
+                    return [...prevDatos, e];
+                });
+               
+                // Actualizamos los monitores y cards con el último dato recibido
+                if( e.datos?.dispositivo?.id === parseInt(dispositivoRef.current)) {
+                    if (e.datos?.metricas) {
+                        const nuevosValores = {};
+                        e.datos.metricas.forEach(m => {
+                            nuevosValores[m.tipo_metrica_id] = m.valor;
+                        });
+
+                        // comprobar que dispositivo seleccionado es el mismo que el del dato recibido
+                        setDatosSensores(nuevosValores);
+
+                        // Agregamos al historial de las últimas 10 lecturas
+                        setHistorialLecturas((prev) => {
+                            const now = new Date();
+                            const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                            
+                            const nuevaLectura = {
+                                time: formattedTime,
+                                temp: nuevosValores[1] ?? 0,
+                                humedad: nuevosValores[2] ?? 0,
+                                presion: nuevosValores[3] ?? 0,
+                                aqi: nuevosValores[4] ?? 0,
+                                // Simulaciones para CO2, partículas y voltaje usando los datos existentes
+                                co2: 400 + (nuevosValores[4] ?? 0) * 3,
+                                pm25: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.15) : 0,
+                                pm10: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.4) : 0,
+                                co: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.2) : 0,
+                                voltaje: 5.0 + (Math.random() * 0.1 - 0.05)
+                            };
+
+                            const nuevoHistorial = [...prev, nuevaLectura];
+                            if (nuevoHistorial.length > 10) {
+                                return nuevoHistorial.slice(nuevoHistorial.length - 10);
+                            }
+                            return nuevoHistorial;
+                        });
+                    }
                 }
             });
 
@@ -94,9 +148,28 @@ export function Panel() {
             }
         };
 
+    const fetchDispostivos = async () => {
+        try {
+            const data = await getDispositivosApi();
+            console.log('Dispositivos obtenidos:', data);
+            setDatosDispositivos(data);
+        } catch (error) {
+            console.error('Error al obtener los dispositivos:', error);
+        }
+    };
+
+
     useEffect(() => {
         fetchCount();
+        fetchDispostivos();
     }, []);
+
+    const handleDispositivoChange = (e) => {
+        const idSeleccionado = e.target.value;
+        setDispositivo(idSeleccionado); 
+        setHistorialLecturas([]); // Limpiamos el historial al cambiar de dispositivo
+        console.log('Dispositivo seleccionado:', idSeleccionado);
+    }
 
     return (
         <div className="w-full h-full flex flex-col ">
@@ -106,8 +179,14 @@ export function Panel() {
                     <p>Vista en tiempo real de todos los sensores</p>
                 </div>
                 <div className="flex gap-2">
-                    <Activity className=" text-gray-500" />
-                    <p>Actualizacion en vivo</p>
+                   <select name="" id="" className="border border-gray-300 p-2 bg-white" onChange={handleDispositivoChange}>
+                        <option value="">Seleccionar dispositivo</option>
+                        {datosDispositivos.map((item) => (
+                            <option key={item.dispositivo?.id} value={item.dispositivo?.id}>
+                                {item.dispositivo?.nombre || `Sensor ${item.dispositivo?.id}`}
+                            </option>
+                        ))}
+                   </select>
                 </div>
             </div>
 
@@ -131,31 +210,31 @@ export function Panel() {
 
             <div className="grid grid-cols-2 gap-4 p-3">
                 <View title="Comparación entre Dispositivos" text="Valores actuales de todos los sensores activos">
-                    <ComparacionDispositivosChart />
+                    <ComparacionDispositivosChart datos={datos} />
                 </View>
 
                 <View title="Calidad del Aire" text="Análisis radar de parámetros ambientales">
-                    <CalidadAireChart />
+                    <CalidadAireChart datos={datosSensores} />
                 </View>
             </div>
 
             <div className="grid grid-cols-2 gap-4 p-3">
                 <View title="Temperatura y CO₂ - Tendencia" text="Evolución temporal de variables">
-                    <TemperaturaCO2Chart />
+                    <TemperaturaCO2Chart datos={historialLecturas} />
                 </View>
 
                 <View title="Partículas en Suspensión" text="PM2.5 y PM10 en el tiempo">
-                    <ParticulasChart />
+                    <ParticulasChart datos={historialLecturas} />
                 </View>
             </div>
 
             <div className="grid grid-cols-2 gap-4 p-3">
                 <View title="Monóxido de Carbono (CO)" text="Niveles de CO en partes por millón">
-                    <COChart />
+                    <COChart datos={historialLecturas} />
                 </View>
 
                 <View title="Voltaje y Humedad" text="Monitoreo de energía y humedad relativa">
-                    <VoltajeHumedadChart />
+                    <VoltajeHumedadChart datos={historialLecturas} />
                 </View>
             </div>
 
@@ -163,6 +242,8 @@ export function Panel() {
                 <View title="Estado de Dispositivos" text="Lecturas actuales de todos los sensores">
                     <div className="flex flex-col gap-4 mt-4">
                         {/* Device 1 */}
+
+                       
                         <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
                             <div className="flex flex-col">
                                 <h3 className="font-bold text-lg">Sensor Oficina Principal</h3>
@@ -183,7 +264,7 @@ export function Panel() {
                             </div>
                         </div>
 
-                        {/* Device 2 */}
+                        {/* Device 2 
                         <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
                             <div className="flex flex-col">
                                 <h3 className="font-bold text-lg">Sensor Sala de Servidores</h3>
@@ -204,7 +285,7 @@ export function Panel() {
                             </div>
                         </div>
 
-                        {/* Device 3 */}
+                        
                         <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
                             <div className="flex flex-col">
                                 <h3 className="font-bold text-lg">Sensor Laboratorio</h3>
@@ -223,7 +304,7 @@ export function Panel() {
                             <div>
                                 <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">online</span>
                             </div>
-                        </div>
+                        </div> */}
                         
                         {/* Offline devices message */}
                         <div className="bg-red-50 text-red-500 border border-red-200 rounded-lg p-3 w-full">

@@ -9,15 +9,9 @@ const comparisonData = [
   { name: 'Laboratorio', CO2: 580, Temp: 21, PM25: 25 },
 ];
 
-const radarData = [
-  { subject: 'Temp', A: 60 },
-  { subject: 'CO', A: 25 },
-  { subject: 'PM2.5', A: 45 },
-  { subject: 'PM10', A: 30 },
-];
-
 // Generate time series data
-const timeSeriesData = Array.from({ length: 24 }).map((_, i) => {
+const timeSeriesData = [];
+/*const timeSeriesData = Array.from({ length: 24 }).map((_, i) => {
   const time = new Date();
   time.setHours(16, 30 + (i * 15));
   return {
@@ -30,91 +24,165 @@ const timeSeriesData = Array.from({ length: 24 }).map((_, i) => {
     voltaje: 4.5 + Math.random() * 1,
     humedad: 40 + Math.random() * 30
   };
-});
+});*/
 
 
 
 
 // 1. Comparación entre Dispositivos (BarChart)
-export const ComparacionDispositivosChart = () => (
-  <BarChart
-    dataset={comparisonData}
-    xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
-    series={[
-      { dataKey: 'CO2', label: 'CO2', color: '#22c55e' },
-      { dataKey: 'Temp', label: 'Temp', color: '#3b82f6' },
-      { dataKey: 'PM25', label: 'PM2.5', color: '#f59e0b' },
-    ]}
-    height={300}
-    margin={{ left: 40, right: 10, top: 40, bottom: 30 }}
-  />
-);
+export function ComparacionDispositivosChart({ datos }) {
+
+  console.log('Datos recibidos en ComparacionDispositivosChart:', datos);
+
+  if (!Array.isArray(datos) || datos.length === 0) {
+    return <p className="text-center text-gray-500 w-full h-full flex items-center justify-center">No hay datos disponibles para mostrar.</p>;
+  } else {
+    // Transformar los datos recibidos para que coincidan con el formato esperado por el gráfico
+
+    const datosSensores = datos.map((item, index) => {
+      const metricas = item?.datos?.metricas || [];
+      // Buscamos cada valor por su tipo_metrica_id
+      const getVal = (id) => metricas.find(m => m.tipo_metrica_id === id)?.valor || 0;
+
+      return {
+        name: item?.datos?.dispositivo?.nombre || `Sensor ${index + 1}`,
+        Temp: getVal(1),
+        Hum: getVal(2),
+        Pres: getVal(3),
+        AQI: getVal(4),
+      };
+    });
+
+    return (
+      <BarChart
+        dataset={datosSensores}
+        xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+        series={[
+          { dataKey: 'Temp', label: 'Temp (°C)', color: '#3b82f6' },
+          { dataKey: 'Hum', label: 'Hum (%)', color: '#10b981' },
+          { dataKey: 'Pres', label: 'Pres (hPa)', color: '#f59e0b' },
+          { dataKey: 'AQI', label: 'AQI', color: '#ef4444' },
+        ]}
+        height={300}
+        margin={{ left: 40, right: 10, top: 40, bottom: 30 }}
+      />
+    );
+
+  }
+
+}
 
 // 2. Calidad del Aire (RadarChart)
 // MUI X Charts no cuenta con gráfica de Radar, usamos BarChart como alternativa visual
-export const CalidadAireChart = () => (
-  <BarChart
-    dataset={radarData}
-    xAxis={[{ scaleType: 'band', dataKey: 'subject' }]}
-    series={[
-      { dataKey: 'A', label: 'Calidad', color: '#3b82f6' }
-    ]}
-    height={300}
-    margin={{ left: 50, right: 10, top: 40, bottom: 30 }}
-  />
-);
+export function CalidadAireChart({ datos }) {
+  // Si los datos aún no están listos o cargados
+  if (!datos || Object.keys(datos).length === 0) {
+    return <p className="text-center text-gray-500 py-10">Cargando datos...</p>;
+  }
+
+  // Mapeamos los datos reales usando los IDs de métrica (tipo_metrica_id)
+  // 1 = Temperatura, 2 = Humedad, 3 = Presión, 4 = Calidad del Aire
+  // Si tienes otras métricas como CO (ej: ID 5), PM2.5 (ej: ID 6), PM10 (ej: ID 7), puedes agregarlas aquí
+  const radarData = [
+    { subject: 'Temp', A: datos[1] ?? 0 },
+    { subject: 'Hum', A: datos[2] ?? 0 },
+    { subject: 'Pres', A: datos[3] ?? 0 },
+    { subject: 'AQI', A: datos[4] ?? 0 },
+  ];
+
+  return (
+    <BarChart
+      dataset={radarData}
+      xAxis={[{ scaleType: 'band', dataKey: 'subject' }]}
+      series={[
+        { dataKey: 'A', label: 'Calidad', color: '#3b82f6' }
+      ]}
+      height={300}
+      margin={{ left: 50, right: 10, top: 40, bottom: 30 }}
+    />
+  );
+}
 
 // 3. Temperatura y CO2 (LineChart with 2 Y-Axes)
-export const TemperaturaCO2Chart = () => (
-  <LineChart
-    dataset={timeSeriesData}
-    xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
-    series={[
-      { dataKey: 'co2', label: 'CO₂ (ppm)', color: '#22c55e', showMark: false },
-      { dataKey: 'temp', label: 'Temp (°C)', color: '#3b82f6', showMark: false },
-    ]}
-    height={300}
-    margin={{ left: 50, right: 20, top: 40, bottom: 30 }}
-  />
-);
+export function TemperaturaCO2Chart ({ datos }) {
+  if (!datos || datos.length === 0) {
+    return <p className="text-center text-gray-500 py-10">Esperando lecturas en tiempo real...</p>;
+  }
+
+  return (
+    <LineChart
+      dataset={datos}
+      xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
+      yAxis={[
+        { id: 'co2Axis', position: 'left' },
+        { id: 'tempAxis', position: 'right' },
+      ]}
+      series={[
+        { dataKey: 'co2', label: 'CO₂ (ppm)', color: '#22c55e', showMark: true, yAxisId: 'co2Axis' },
+        { dataKey: 'temp', label: 'Temp (°C)', color: '#3b82f6', showMark: true, yAxisId: 'tempAxis' },
+      ]}
+      height={300}
+      margin={{ left: 50, right: 50, top: 40, bottom: 30 }}
+    />
+  );
+}
 
 // 4. Partículas en suspensión (AreaChart)
-export const ParticulasChart = () => (
-  <LineChart
-    dataset={timeSeriesData}
-    xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
-    series={[
-      { dataKey: 'pm25', label: 'PM2.5 (µg/m³)', color: '#f59e0b', area: true, showMark: false },
-      { dataKey: 'pm10', label: 'PM10 (µg/m³)', color: '#ef4444', area: true, showMark: false },
-    ]}
-    height={300}
-    margin={{ left: 50, right: 20, top: 40, bottom: 30 }}
-  />
-);
+export const ParticulasChart = ({ datos }) => {
+  if (!datos || datos.length === 0) {
+    return <p className="text-center text-gray-500 py-10">Esperando lecturas en tiempo real...</p>;
+  }
+  return (
+    <LineChart
+      dataset={datos}
+      xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
+      series={[
+        { dataKey: 'pm25', label: 'PM2.5 (µg/m³)', color: '#f59e0b', area: true, showMark: true },
+        { dataKey: 'pm10', label: 'PM10 (µg/m³)', color: '#ef4444', area: true, showMark: true },
+      ]}
+      height={300}
+      margin={{ left: 50, right: 20, top: 40, bottom: 30 }}
+    />
+  );
+};
 
 // 5. Monóxido de Carbono (LineChart)
-export const COChart = () => (
-  <LineChart
-    dataset={timeSeriesData}
-    xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
-    series={[
-      { dataKey: 'co', label: 'CO (ppm)', color: '#ef4444', showMark: false },
-    ]}
-    height={300}
-    margin={{ left: 50, right: 20, top: 40, bottom: 30 }}
-  />
-);
+export const COChart = ({ datos }) => {
+  if (!datos || datos.length === 0) {
+    return <p className="text-center text-gray-500 py-10">Esperando lecturas en tiempo real...</p>;
+  }
+  return (
+    <LineChart
+      dataset={datos}
+      xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
+      series={[
+        { dataKey: 'co', label: 'CO (ppm)', color: '#ef4444', showMark: true },
+      ]}
+      height={300}
+      margin={{ left: 50, right: 20, top: 40, bottom: 30 }}
+    />
+  );
+};
 
 // 6. Voltaje y Humedad (LineChart with 2 axes)
-export const VoltajeHumedadChart = () => (
-  <LineChart
-    dataset={timeSeriesData}
-    xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
-    series={[
-      { dataKey: 'voltaje', label: 'Voltaje (V)', color: '#a855f7', showMark: false },
-      { dataKey: 'humedad', label: 'Humedad (%)', color: '#06b6d4', showMark: false },
-    ]}
-    height={300}
-    margin={{ left: 40, right: 20, top: 40, bottom: 30 }}
-  />
-);
+export const VoltajeHumedadChart = ({ datos }) => {
+  if (!datos || datos.length === 0) {
+    return <p className="text-center text-gray-500 py-10">Esperando lecturas en tiempo real...</p>;
+  }
+  return (
+    <LineChart
+      dataset={datos}
+      xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
+      yAxis={[
+        { id: 'voltAxis', position: 'left' },
+        { id: 'humAxis', position: 'right' },
+      ]}
+      series={[
+        { dataKey: 'voltaje', label: 'Voltaje (V)', color: '#a855f7', showMark: true, yAxisId: 'voltAxis' },
+        { dataKey: 'humedad', label: 'Humedad (%)', color: '#06b6d4', showMark: true, yAxisId: 'humAxis' },
+      ]}
+      height={300}
+      margin={{ left: 40, right: 50, top: 40, bottom: 30 }}
+    />
+  );
+};
