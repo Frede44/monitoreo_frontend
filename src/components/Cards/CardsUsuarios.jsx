@@ -1,7 +1,7 @@
 import { Trash2, Users,SquarePen, Shield } from "lucide-react";
 import Button from "../Button";
 
-export default function CardsUsuarios({ nombre, email, rol, fechaCreacion, onClickEditar }) {
+export default function CardsUsuarios({ nombre, email, rol, fechaCreacion, onClickEditar, onClickEliminar }) {
 
     const estilorol = rol === "administrador" ?  "bg-red-700 p-1 text-xs rounded-xl flex justify-center items-center gap-1 text-white" : "bg-black p-1 text-xs rounded-xl text-white flex justify-center items-center gap-1" ;
     return (
@@ -27,7 +27,7 @@ export default function CardsUsuarios({ nombre, email, rol, fechaCreacion, onCli
             </div>
             <div className="flex flex-row gap-2">
                 <Button children={<SquarePen className="w-4 h-4"  />} estile=" text-black font-bold py-2 px-4 rounded border border-black hover:bg-gray-200" onClick={onClickEditar} />
-                <Button children={<Trash2 className="w-4 h-4" />} estile="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" />
+                <Button children={<Trash2 className="w-4 h-4" />} estile="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={onClickEliminar} />
             </div>
         </div>
     )

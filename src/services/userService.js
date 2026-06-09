@@ -89,3 +89,24 @@ export const getRolesApi = async () => {
             throw error;
         }
  }
+
+ export const deleteUserApi = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}/usuarios/delete/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Error al eliminar el usuario');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error al eliminar el usuario:', error);
+        throw error;
+    }
+ }

@@ -42,36 +42,34 @@ export function Panel() {
         // 👇 2. Asignar Pusher a window
         window.Pusher = Pusher;
 
-        // 👇 3. Configurar la conexión hacia tu Laravel Reverb
-        window.Echo = new Echo({
-            broadcaster: 'reverb',
-            // Usamos las variables que vi en tu foto del .env de React
-            key: import.meta.env.VITE_REVERB_APP_KEY, 
-            wsHost: import.meta.env.VITE_REVERB_HOST,
-            wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
-            wssPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
-            forceTLS: import.meta.env.VITE_REVERB_SCHEME === 'https',
-            enabledTransports: ['ws', 'wss'],
-
-            authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
-
-            auth: {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: 'application/json',
+        // 👇 3. Configurar la conexión hacia tu Laravel Reverb si no está ya creada
+        if (!window.Echo) {
+            window.Echo = new Echo({
+                broadcaster: 'reverb',
+                key: import.meta.env.VITE_REVERB_APP_KEY, 
+                wsHost: import.meta.env.VITE_REVERB_HOST,
+                wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+                wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+                forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+                enabledTransports: ['ws', 'wss'],
+                authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
+                auth: {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'application/json',
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        const channel = window.Echo.private(`user.${user.user_data.id}`);
 
         // Escuchamos el canal
-        window.Echo.private(`user.${user.user_data.id}`)
-            // 👇 AGREGA EL PUNTO AQUÍ 👇
-            .listen('.nuevos-datos', (e) => {
+        channel.listen('.nuevos-datos', (e) => {
                 console.log('Datos recibidos del backend:', e);
                 
                 // Actualizamos los datos para la gráfica (mantenemos array de dispositivos)
                 setDatos((prevDatos) => {
-                    // Nota: el backend envía 'dispositivo' en singular según el log
                     const idNuevo = e.datos?.dispositivo?.id;
                     const index = prevDatos.findIndex(item => item.datos?.dispositivo?.id === idNuevo);
                     if (index !== -1) {
@@ -104,7 +102,6 @@ export function Panel() {
                                 humedad: nuevosValores[2] ?? 0,
                                 presion: nuevosValores[3] ?? 0,
                                 aqi: nuevosValores[4] ?? 0,
-                                // Simulaciones para CO2, partículas y voltaje usando los datos existentes
                                 co2: 400 + (nuevosValores[4] ?? 0) * 3,
                                 pm25: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.15) : 0,
                                 pm10: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.4) : 0,
@@ -122,15 +119,9 @@ export function Panel() {
                 }
             });
 
-        // Escuchamos el canal de alertas
-        window.Echo.private(`user.${user.user_data.id}`)
-            .listen('.alerta-datos', (e) => {
-                console.log('Alerta recibida del backend:', e.alerta);
-            });
-
         return () => {
             if (window.Echo) {
-                window.Echo.leaveChannel(`private-user.${user.user_data.id}`);
+                window.Echo.private(`user.${user.user_data.id}`).stopListening('.nuevos-datos');
             }
         };
     }, [user, token]);
@@ -243,27 +234,48 @@ export function Panel() {
                     <div className="flex flex-col gap-4 mt-4">
                         {/* Device 1 */}
 
-                       
-                        <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
-                            <div className="flex flex-col">
-                                <h3 className="font-bold text-lg">Sensor Oficina Principal</h3>
-                                <p className="text-sm text-gray-500">Planta 1 - Oficina 101</p>
-                                <div className="flex gap-6 mt-3">
-                                    <div className="flex items-center gap-1 text-sm"><Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">27.1°C</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Wind size={16} className="text-green-500" /> CO₂: <span className="font-bold">554 ppm</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><AlertTriangle size={16} className="text-red-500" /> CO: <span className="font-bold">20.6 ppm</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-orange-500" /> PM2.5: <span className="font-bold">6 µg/m³</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-pink-500" /> PM10: <span className="font-bold">18 µg/m³</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Activity size={16} className="text-blue-400" /> Humedad: <span className="font-bold">68%</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Zap size={16} className="text-purple-500" /> Voltaje: <span className="font-bold">5.04V</span></div>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-2">Última lectura: 01/06/2026, 22:13</p>
-                            </div>
-                            <div>
-                                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">online</span>
-                            </div>
-                        </div>
+                        {datosDispositivos.map(dispositivos => {
+                            const matchingDato = datos.find(d => d.datos?.dispositivo?.id === dispositivos.dispositivo?.id);
+                            const temp = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 1)?.valor;
+                            const humedad = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 2)?.valor;
+                            const presion = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 3)?.valor;
+                            const aqi = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 4)?.valor;
 
+                            return (
+                                <div key={dispositivos.id} className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
+                                    <div className="flex flex-col">
+                                        <h3 className="font-bold text-lg">{dispositivos.dispositivo?.nombre}</h3>
+                                        <p className="text-sm text-gray-500">{dispositivos.dispositivo?.ubicacion}</p>
+                                        <div className="flex gap-6 mt-3">
+                                            {temp !== undefined && (
+                                                <div className="flex items-center gap-1 text-sm">
+                                                    <Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">{temp ? temp : "No disponible"}°C</span>
+                                                </div>
+                                            )}
+                                            {humedad !== undefined && (
+                                                <div className="flex items-center gap-1 text-sm">
+                                                    <Wind size={16} className="text-blue-400" /> Hum: <span className="font-bold">{humedad ? humedad : "No disponible"}%</span>
+                                                </div>
+                                            )}
+                                            {presion !== undefined && (
+                                                <div className="flex items-center gap-1 text-sm">
+                                                    <CloudOff size={16} className="text-orange-500" /> Presión: <span className="font-bold">{presion ? presion : "No disponible"} hPa</span>
+                                                </div>
+                                            )}
+                                            {aqi !== undefined && (
+                                                <div className="flex items-center gap-1 text-sm">
+                                                    <Zap size={16} className="text-red-500" /> AQI: <span className="font-bold">{aqi}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-2">Última lectura: {dispositivos.dispositivo?.updated_at}</p>
+                                    </div>
+                                    <div>
+                                        <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">online</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                         {/* Device 2 
                         <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
                             <div className="flex flex-col">

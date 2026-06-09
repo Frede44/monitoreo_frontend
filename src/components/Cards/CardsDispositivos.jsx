@@ -1,7 +1,7 @@
 import {  Cpu, Trash2, SquarePen, Wifi  } from 'lucide-react';
 import Button from '../Button';
 
-export default function CardsDispositivos({nombre, ubicacion, mac, token, estado, onClickEditar}) {
+export default function CardsDispositivos({nombre, ubicacion, mac, token, estado, onClickEditar, onClickEliminar}) {
     return(
         <div className='bg-white rounded border p-4'>
             <div className='flex flex-row justify-between items-center mb-4'>
@@ -33,7 +33,7 @@ export default function CardsDispositivos({nombre, ubicacion, mac, token, estado
 
             <div className='flex flex-row gap-2 mt-4'>
                 <Button estile='text-black w-full flex flex-row gap-2 justify-center items-center text-sm border border-black hover:bg-gray-200' onClick={onClickEditar}> <SquarePen className='size-4' />  Editar</Button>
-                <Button estile='text-white bg-red-500 hover:bg-red-600 flex flex-row gap-2 items-center text-sm' > <Trash2 className='size-4' /></Button>
+                <Button estile='text-white bg-red-500 hover:bg-red-600 flex flex-row gap-2 items-center text-sm' onClick={onClickEliminar} > <Trash2 className='size-4' /></Button>
             </div>
         </div>
     )

@@ -2,7 +2,7 @@ import Button from "../components/Button";
 import CardsUsuarios from "../components/Cards/CardsUsuarios";
 import View from "../components/View";
 import { useNavigate } from "react-router-dom";
-import { getUserInfoApi } from "../services/userService";
+import { getUserInfoApi, deleteUserApi } from "../services/userService";
 import { useState, useEffect } from "react";
 import DialogUsuarios from "../components/Dialog/DialogUsuarios";
 import DialogUsuarioEdit from "../components/Dialog/DialogUsuarioEdit";
@@ -43,6 +43,23 @@ export default function Usuarios() {
         setIsDialogOpenEdit(true);
     }
 
+    const handleEliminarUsuario = async (id) => {
+        // Aquí puedes implementar la lógica para eliminar la métrica usando su ID
+        console.log("Eliminar usuario con ID:", id);
+
+        if (window.confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
+            deleteUserApi(id)
+                .then(() => {
+                    alert("Usuario eliminado exitosamente.");
+                    fetchUsuarios(); // Refresca la lista de usuarios después de eliminar
+                })
+                .catch((error) => {
+                    console.error("Error al eliminar el usuario:", error);
+                    alert("Ocurrió un error al eliminar el usuario.");
+                });
+        }
+    }
+
     return (
         <div className="w-full h-full flex flex-col gap-4">
             <div className="flex flex-row justify-between p-4">
@@ -66,6 +83,7 @@ export default function Usuarios() {
                             rol={usuario.roles[0].name }
                             fechaCreacion={usuario.created_at}
                             onClickEditar={() => handleEditarUsuario(usuario.id)}
+                            onClickEliminar={() => handleEliminarUsuario(usuario.id)}
                         />
 
                     </div>

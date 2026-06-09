@@ -43,3 +43,24 @@ export const editarDispositivoApi = async (id, dispositivoData) => {
         throw error;
     }
 }
+
+export const eliminarDispositivoApi = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}/dispositivos/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Error al eliminar el dispositivo');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error al eliminar el dispositivo:', error);
+        throw error;
+    }
+}

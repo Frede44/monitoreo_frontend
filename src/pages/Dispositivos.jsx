@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import CardsDispositivos from "../components/Cards/CardsDispositivos";
 import { getDispositivosApi } from "../services/getDispositivos";
+import { eliminarDispositivoApi } from "../services/guardarDispositivo";
 import DialogDispositivos from "../components/Dialog/DialogDispositivos";
 import DialogDispositivosEdit from "../components/Dialog//DialogDispositivoEdit";
 
@@ -39,6 +40,23 @@ export default function Dispositivos() {
         setDispositivoId(dispositivo.dispositivo.id); // Ajusta esto según la estructura real de tu objeto dispositivo
     }
 
+    const handleEliminarDispositivo = async (id) => {
+        // Aquí puedes implementar la lógica para eliminar la métrica usando su ID
+        console.log("Eliminar métrica con ID:", id);
+
+        if (window.confirm("¿Estás seguro de que deseas eliminar esta métrica?")) {
+            eliminarDispositivoApi(id)
+                .then(() => {
+                    alert("Dispositivo eliminado exitosamente.");
+                    fetchDispositivos(); // Refresca la lista de dispositivos después de eliminar
+                })
+                .catch((error) => {
+                    console.error("Error al eliminar el dispositivo:", error);
+                    alert("Ocurrió un error al eliminar el dispositivo.");
+                });
+                    }
+    }
+
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
@@ -66,6 +84,7 @@ export default function Dispositivos() {
                             token={tokenParaMostrar}
                             estado={dispositivo.dispositivo.estado ? "En línea" : "Desconectado"}
                             onClickEditar={() => handleEditarDispositivo(dispositivo)}
+                            onClickEliminar={() => handleEliminarDispositivo(dispositivo.dispositivo.id)}
                         />
                     );
                 })}
