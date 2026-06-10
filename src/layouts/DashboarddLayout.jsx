@@ -2,7 +2,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import Headers from '../components/Headers';
 import Nav from '../components/Nav';
-import { LayoutPanelLeft, Cpu, User, Bell, FlaskConical, LogOut } from 'lucide-react';
+import { LayoutPanelLeft, Cpu, User, Bell, FlaskConical, LogOut, Shield } from 'lucide-react';
 import LinkNav from '../components/LinkNav';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
@@ -40,7 +40,11 @@ export default function DashboardLayout() {
                                 <LinkNav to="/panel/metricas" icon={<FlaskConical className="w-5" />}>
                                     Métricas
                                 </LinkNav>
+                                <LinkNav to="/panel/roles" icon={<Shield className="w-5" />}>
+                                    Roles
+                                </LinkNav>
                             </div>
+
 
                             <div className="flex flex-col gap-3 mt-auto border-t border-zinc-100 pt-4">
                                 <div className="flex items-center gap-3 p-3 border border-zinc-200 rounded-lg bg-zinc-50/50">

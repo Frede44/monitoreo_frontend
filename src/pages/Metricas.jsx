@@ -5,29 +5,34 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DialogMetricas from "../components/Dialog/DialogMetricas";
 import DialogMetricasEdit from "../components/Dialog/DIalogMetricasEdit";
+import Loader from "../components/Loader";
 
 export default function Metricas() {
     const [metricas, setMetricas] = useState([]);
-     const [isDialogOpen, setIsDialogOpen] = useState(false);
-     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-     const [metricaSeleccionada, setMetricaSeleccionada] = useState(null);
-     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [metricaSeleccionada, setMetricaSeleccionada] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchMetricas();
     }, [navigate]);
 
     const fetchMetricas = async () => {
-            try {
-                const data = await metricasApi();
-                setMetricas(data.data);
-                console.log(data.data);
-            } catch (error) {
-                if (error.message.includes('401') || error.message.includes('obtener las métricas')) {
-                    navigate('/login');
-                }
+        setLoading(true);
+        try {
+            const data = await metricasApi();
+            setMetricas(data.data);
+            console.log(data.data);
+        } catch (error) {
+            if (error.message.includes('401') || error.message.includes('obtener las métricas')) {
+                navigate('/login');
             }
-        };
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
 
@@ -58,6 +63,10 @@ export default function Metricas() {
             }
 
         }
+
+    if (loading) {
+        return <Loader message="Cargando métricas de sensores..." />;
+    }
 
     return (
         <div className="w-full h-full flex flex-col gap-4">

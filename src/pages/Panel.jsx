@@ -10,7 +10,9 @@ import { useContext } from 'react';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
+
 export function Panel() {
+    const [loading, setLoading] = useState(true);
     const [datosSensores, setDatosSensores] = useState({
         1: 0, // Temperatura
         2: 0, // Humedad
@@ -151,8 +153,16 @@ export function Panel() {
 
 
     useEffect(() => {
-        fetchCount();
-        fetchDispostivos();
+        const loadInitialData = async () => {
+            try {
+                await Promise.all([fetchCount(), fetchDispostivos()]);
+            } catch (error) {
+                console.error('Error al cargar datos del panel:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadInitialData();
     }, []);
 
     const handleDispositivoChange = (e) => {
@@ -161,6 +171,8 @@ export function Panel() {
         setHistorialLecturas([]); // Limpiamos el historial al cambiar de dispositivo
         console.log('Dispositivo seleccionado:', idSeleccionado);
     }
+
+   
 
     return (
         <div className="w-full h-full flex flex-col ">

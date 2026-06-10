@@ -6,9 +6,11 @@ import { getDispositivosApi } from "../services/getDispositivos";
 import { eliminarDispositivoApi } from "../services/guardarDispositivo";
 import DialogDispositivos from "../components/Dialog/DialogDispositivos";
 import DialogDispositivosEdit from "../components/Dialog//DialogDispositivoEdit";
+import Loader from "../components/Loader";
 
 export default function Dispositivos() {
     const [dispositivos, setDispositivos] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDialogOpenEdit, setIsDialogOpenEdit] = useState(false);
     const [dispositivoId, setDispositivoId] = useState(null);
@@ -20,6 +22,7 @@ export default function Dispositivos() {
     }, [navigate]);
 
     const fetchDispositivos = async () => {
+        setLoading(true);
         try {
             const data = await getDispositivosApi();
             setDispositivos(data);
@@ -28,6 +31,8 @@ export default function Dispositivos() {
             if (error.message.includes('401') || error.message.includes('obtener los dispositivos')) {
                 navigate('/login');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -57,6 +62,10 @@ export default function Dispositivos() {
                     }
     }
 
+
+    if (loading) {
+        return <Loader message="Cargando dispositivos IoT..." />;
+    }
 
     return (
         <div className="w-full h-full flex flex-col gap-4">

@@ -9,6 +9,7 @@ import Dispositivos from './pages/Dispositivos'
 import { Panel } from './pages/Panel';
 import { Alertas } from './pages/Alertas';
 import Metricas from './pages/Metricas';
+import Roles from './pages/Roles';
 
 
 // 1. Creamos un subcomponente para usar useLocation (necesita estar dentro del Router)
@@ -39,7 +40,9 @@ function AppContent() {
           <Route path="dispositivos" element={<Dispositivos />} />
           <Route path="alertas" element={<Alertas />} />
           <Route path="metricas" element={<Metricas />} />
+          <Route path="roles" element={<Roles />} />
         </Route>
+
         
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

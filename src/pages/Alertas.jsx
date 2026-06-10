@@ -7,12 +7,14 @@ import DialogAlertas from "../components/Dialog/DialogAlertas";
 import DialogAlertasEdit from "../components/Dialog/DialogAlertasEdit";
 import { getAlertasApi, cambiarEstadoAlertaApi } from "../services/alertaService";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 export function Alertas() {
     const [isOpen, setIsOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [alertaSeleccionada, setAlertaSeleccionada] = useState(null);
     const [alertas, setAlertas] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const openDialog = () => {
@@ -20,6 +22,7 @@ export function Alertas() {
     };
 
     const fetchAlertas = async () => {
+        setLoading(true);
         try {
             const data = await getAlertasApi();
             setAlertas(data);
@@ -28,6 +31,8 @@ export function Alertas() {
             if (error.message.includes('401') || error.message.includes('obtener las alertas')) {
                 navigate('/login');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -64,6 +69,10 @@ export function Alertas() {
             console.error("Error al cambiar el estado de la alerta:", error);
         }
     };
+
+    if (loading) {
+        return <Loader message="Cargando configuración de alertas..." />;
+    }
 
     return (
         <div className="w-full h-full flex flex-col gap-4">

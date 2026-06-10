@@ -6,9 +6,11 @@ import { getUserInfoApi, deleteUserApi } from "../services/userService";
 import { useState, useEffect } from "react";
 import DialogUsuarios from "../components/Dialog/DialogUsuarios";
 import DialogUsuarioEdit from "../components/Dialog/DialogUsuarioEdit";
+import Loader from "../components/Loader";
 
 export default function Usuarios() {
     const [usuarios, setUsuarios] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDialogOpenEdit, setIsDialogOpenEdit] = useState(false);
     const [usuarioId, setUsuarioId] = useState(null);
@@ -20,6 +22,7 @@ export default function Usuarios() {
     }, [navigate]);
 
     const fetchUsuarios = async () => {
+        setLoading(true);
         try {
             const data = await getUserInfoApi();
             setUsuarios(data);
@@ -28,6 +31,8 @@ export default function Usuarios() {
             if (error.message.includes('401') || error.message.includes('obtener los dispositivos')) {
                 navigate('/login');
             }
+        } finally {
+            setLoading(false);
         }
 
     }
@@ -58,6 +63,10 @@ export default function Usuarios() {
                     alert("Ocurrió un error al eliminar el usuario.");
                 });
         }
+    }
+
+    if (loading) {
+        return <Loader message="Cargando usuarios del sistema..." />;
     }
 
     return (

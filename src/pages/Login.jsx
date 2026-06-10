@@ -12,6 +12,7 @@ export default function Login() {
     const [user, setUser] = useState(null)
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
 
     const { login } = useContext(AuthContext)
@@ -19,6 +20,7 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true);
 
         try {
             const response = await loginApi(email, password);
@@ -33,6 +35,8 @@ export default function Login() {
             navigate('/panel');
         } catch (error) {
             setError(error.message || 'Error desconocido al iniciar sesión');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -65,7 +69,17 @@ return (
             </div>
             
             <div className="w-full flex justify-center">
-                <Button type="submit" children="Iniciar Sesión" estile="bg-black text-white hover:bg-gray-800 w-full" />
+                <Button 
+                    type="submit" 
+                    children={loading ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                            <span>Iniciando Sesión...</span>
+                        </div>
+                    ) : "Iniciar Sesión"} 
+                    estile={`bg-black text-white hover:bg-gray-800 w-full ${loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+                    disabled={loading}
+                />
             </div>
             {error &&
             <div className="border border-red-500 w-full flex justify-center item-center rounded bg-red-100 p-2">
