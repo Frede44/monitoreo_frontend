@@ -14,10 +14,10 @@ import Pusher from 'pusher-js';
 export function Panel() {
     const [loading, setLoading] = useState(true);
     const [datosSensores, setDatosSensores] = useState({
-        1: 0, // Temperatura
-        2: 0, // Humedad
-        3: 0, // Presión
-        4: 0  // Calidad del Aire
+        1: 0, // Monoxido de Carbono
+        2: 0, // Temperatura
+        3: 0, // Humedad
+        4: 0  // Presión
     });
 
     const [datos, setDatos] = useState([]);
@@ -101,14 +101,14 @@ export function Panel() {
                             const nuevaLectura = {
                                 time: formattedTime,
                                 monoxido_carbono: nuevosValores[1] ?? 0,
-                                temperatura: nuevosValores[2] ?? 0,
+                                temp: nuevosValores[2] ?? 0,
                                 humedad: nuevosValores[3] ?? 0,
                                 presion: nuevosValores[4] ?? 0,
                                 aqi: nuevosValores[4] ?? 0,
                                 co2: 400 + (nuevosValores[4] ?? 0) * 3,
                                 pm25: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.15) : 0,
                                 pm10: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.4) : 0,
-                                co: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.2) : 0,
+                                co: nuevosValores[1] ?? 0,
                                 voltaje: 5.0 + (Math.random() * 0.1 - 0.05)
                             };
 
@@ -197,10 +197,10 @@ export function Panel() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-3">
                 {/* Aquí puedes agregar más tarjetas con diferentes métricas o información relevante */}
                 <Cards title="Dispositivos" value={countDispositivos.count} icon={<Activity />} text="Dispositivos en funcionamiento" color="text-green-500" />
-                <Cards title="Monoxido de Carbono" value={`${datosSensores[1] ?? 0} ppm`} icon={<Thermometer />} text="Promedio de temperatura" color="text-yellow-500" />
-                <Cards title="Temperatura" value={`${datosSensores[2] ?? 0} °C`} icon={<Wind />} text="Nivel de humedad" color="text-blue-500" />
-                <Cards title="Humedad" value={`${datosSensores[3] ?? 0} %`} icon={<CloudOff />} text="Presión atmosférica" color="text-orange-500" />
-                <Cards title="Presión" value={`${datosSensores[4] ?? 0} hPa`} icon={<Zap />} text="Índice de calidad del aire" color="text-red-500" />
+                <Cards title="Monoxido de Carbono" value={`${datosSensores[1] ?? 0} ppm`} icon={<AlertTriangle />} text="Nivel de monóxido de carbono" color="text-yellow-500" />
+                <Cards title="Temperatura" value={`${datosSensores[2] ?? 0} °C`} icon={<Thermometer />} text="Temperatura ambiente" color="text-blue-500" />
+                <Cards title="Humedad" value={`${datosSensores[3] ?? 0} %`} icon={<Wind />} text="Humedad relativa" color="text-orange-500" />
+                <Cards title="Presión" value={`${datosSensores[4] ?? 0} hPa`} icon={<CloudOff />} text="Presión atmosférica" color="text-red-500" />
 
             </div>
 
@@ -274,7 +274,7 @@ export function Panel() {
                                         <div className="flex flex-wrap gap-4 mt-3">
                                             {monoxido_carbono !== undefined && (
                                                 <div className="flex items-center gap-1 text-sm shrink-0">
-                                                    <Thermometer size={16} className="text-blue-500" /> Monoxido de Carbono: <span className="font-bold">{monoxido_carbono ? monoxido_carbono : "No disponible"} ppm</span>
+                                                    <AlertTriangle size={16} className="text-yellow-500" /> Monoxido de Carbono: <span className="font-bold">{monoxido_carbono ? monoxido_carbono : "No disponible"} ppm</span>
                                                 </div>
                                             )}
                                             {temperatura !== undefined && (

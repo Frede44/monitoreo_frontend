@@ -46,10 +46,10 @@ export function ComparacionDispositivosChart({ datos }) {
 
       return {
         name: item?.datos?.dispositivo?.nombre || `Sensor ${index + 1}`,
-        Temp: getVal(1),
-        Hum: getVal(2),
-        Pres: getVal(3),
-        AQI: getVal(4),
+        CO: getVal(1),
+        Temp: getVal(2),
+        Hum: getVal(3),
+        Pres: getVal(4),
       };
     });
 
@@ -58,10 +58,10 @@ export function ComparacionDispositivosChart({ datos }) {
         dataset={datosSensores}
         xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
         series={[
+          { dataKey: 'CO', label: 'CO (ppm)', color: '#ef4444' },
           { dataKey: 'Temp', label: 'Temp (°C)', color: '#3b82f6' },
           { dataKey: 'Hum', label: 'Hum (%)', color: '#10b981' },
           { dataKey: 'Pres', label: 'Pres (hPa)', color: '#f59e0b' },
-          { dataKey: 'AQI', label: 'AQI', color: '#ef4444' },
         ]}
         height={300}
         margin={{ left: 40, right: 10, top: 40, bottom: 30 }}
@@ -84,10 +84,10 @@ export function CalidadAireChart({ datos }) {
   // 1 = Temperatura, 2 = Humedad, 3 = Presión, 4 = Calidad del Aire
   // Si tienes otras métricas como CO (ej: ID 5), PM2.5 (ej: ID 6), PM10 (ej: ID 7), puedes agregarlas aquí
   const radarData = [
-    { subject: 'Temp', A: datos[1] ?? 0 },
-    { subject: 'Hum', A: datos[2] ?? 0 },
-    { subject: 'Pres', A: datos[3] ?? 0 },
-    { subject: 'AQI', A: datos[4] ?? 0 },
+    { subject: 'CO', A: datos[1] ?? 0 },
+    { subject: 'Temp', A: datos[2] ?? 0 },
+    { subject: 'Hum', A: datos[3] ?? 0 },
+    { subject: 'Pres', A: datos[4] ?? 0 },
   ];
 
   return (
