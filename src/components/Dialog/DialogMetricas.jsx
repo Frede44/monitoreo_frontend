@@ -34,9 +34,9 @@ const [unidad, setUnidad] = useState('');
     }
 
         return(
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div>
-                    <View title="Agregar Métrica" text="Ingresa los detalles de la nueva métrica que deseas agregar" estilos="w-96 p-6">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs" onClick={onClose}>
+                <div onClick={(e) => e.stopPropagation()} className="max-w-md w-full m-4">
+                    <View title="Agregar Métrica" text="Ingresa los detalles de la nueva métrica que deseas agregar" estilos="p-6">
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">
@@ -67,10 +67,10 @@ const [unidad, setUnidad] = useState('');
                                 />
                             </div>
                             <div className="flex justify-end gap-2">
-                                <button children={isLoading ? "Guardando..." : "Agregar "} className={`${isLoading ? 'bg-gray-500' : 'bg-black hover:bg-gray-700'} text-white  py-2 px-4 rounded`} disabled={isLoading} type="submit">
-                                    Agregar Métrica
+                                <button className={`${isLoading ? 'bg-gray-500' : 'bg-black hover:bg-gray-700'} text-white py-2 px-4 rounded text-sm font-medium transition-colors`} disabled={isLoading} type="submit">
+                                    {isLoading ? "Guardando..." : "Agregar Métrica"}
                                 </button>
-                                <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={onClose} >
+                                <button type="button" className="bg-white hover:bg-gray-100 text-gray-800 py-2 px-4 rounded border text-sm font-medium transition-colors" onClick={onClose} >
                                     Cancelar
                                 </button>
                             </div>

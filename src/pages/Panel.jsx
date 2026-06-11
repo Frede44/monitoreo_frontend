@@ -175,14 +175,14 @@ export function Panel() {
    
 
     return (
-        <div className="w-full h-full flex flex-col ">
-            <div className="flex justify-between items-center p-3">
+        <div className="w-full h-full flex flex-col">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold">Dashboard de Monitorización</h1>
-                    <p>Vista en tiempo real de todos los sensores</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Dashboard de Monitorización</h1>
+                    <p className="text-sm text-gray-500">Vista en tiempo real de todos los sensores</p>
                 </div>
-                <div className="flex gap-2">
-                   <select name="" id="" className="border border-gray-300 p-2 bg-white" onChange={handleDispositivoChange}>
+                <div className="flex gap-2 w-full sm:w-auto">
+                   <select name="" id="" className="border border-gray-300 p-2 bg-white w-full sm:w-auto rounded" onChange={handleDispositivoChange}>
                         <option value="">Seleccionar dispositivo</option>
                         {datosDispositivos.map((item) => (
                             <option key={item.dispositivo?.id} value={item.dispositivo?.id}>
@@ -193,7 +193,7 @@ export function Panel() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-5 gap-4 p-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-3">
                 {/* Aquí puedes agregar más tarjetas con diferentes métricas o información relevante */}
                 <Cards title="Dispositivos" value={countDispositivos.count} icon={<Activity />} text="Dispositivos en funcionamiento" color="text-green-500" />
                 <Cards title="Temperatura" value={`${datosSensores[1] ?? 0} °C`} icon={<Thermometer />} text="Promedio de temperatura" color="text-yellow-500" />
@@ -203,7 +203,7 @@ export function Panel() {
 
             </div>
 
-            <View title="Monitoreo en tiempo real" text="Valores actuales del dispositivo seleccionado" estilos="   flex flex-row justify-between">
+            <View title="Monitoreo en tiempo real" text="Valores actuales del dispositivo seleccionado" estilos="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 justify-items-center p-2">
                 {/* Aquí puedes agregar gráficos o tablas para mostrar datos más detallados */}
                 <Monitor valor={datosSensores[1] ?? 0} maxValor={100} unidad="°C" magnitud="Temperatura" />
                 <Monitor valor={datosSensores[2] ?? 0} maxValor={100} unidad="%" magnitud="Humedad" />
@@ -211,33 +211,45 @@ export function Panel() {
                 <Monitor valor={datosSensores[4] ?? 0} maxValor={100} unidad="AQI" magnitud="Calidad del Aire" />
             </View>
 
-            <div className="grid grid-cols-2 gap-4 p-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3">
                 <View title="Comparación entre Dispositivos" text="Valores actuales de todos los sensores activos">
-                    <ComparacionDispositivosChart datos={datos} />
+                    <div className="overflow-x-auto w-full">
+                        <ComparacionDispositivosChart datos={datos} />
+                    </div>
                 </View>
 
                 <View title="Calidad del Aire" text="Análisis radar de parámetros ambientales">
-                    <CalidadAireChart datos={datosSensores} />
+                    <div className="overflow-x-auto w-full">
+                        <CalidadAireChart datos={datosSensores} />
+                    </div>
                 </View>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 p-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3">
                 <View title="Temperatura y CO₂ - Tendencia" text="Evolución temporal de variables">
-                    <TemperaturaCO2Chart datos={historialLecturas} />
+                    <div className="overflow-x-auto w-full">
+                        <TemperaturaCO2Chart datos={historialLecturas} />
+                    </div>
                 </View>
 
                 <View title="Partículas en Suspensión" text="PM2.5 y PM10 en el tiempo">
-                    <ParticulasChart datos={historialLecturas} />
+                    <div className="overflow-x-auto w-full">
+                        <ParticulasChart datos={historialLecturas} />
+                    </div>
                 </View>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 p-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3">
                 <View title="Monóxido de Carbono (CO)" text="Niveles de CO en partes por millón">
-                    <COChart datos={historialLecturas} />
+                    <div className="overflow-x-auto w-full">
+                        <COChart datos={historialLecturas} />
+                    </div>
                 </View>
 
                 <View title="Voltaje y Humedad" text="Monitoreo de energía y humedad relativa">
-                    <VoltajeHumedadChart datos={historialLecturas} />
+                    <div className="overflow-x-auto w-full">
+                        <VoltajeHumedadChart datos={historialLecturas} />
+                    </div>
                 </View>
             </div>
 
@@ -254,81 +266,40 @@ export function Panel() {
                             const aqi = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 4)?.valor;
 
                             return (
-                                <div key={dispositivos.id} className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
-                                    <div className="flex flex-col">
-                                        <h3 className="font-bold text-lg">{dispositivos.dispositivo?.nombre}</h3>
-                                        <p className="text-sm text-gray-500">{dispositivos.dispositivo?.ubicacion}</p>
-                                        <div className="flex gap-6 mt-3">
+                                <div key={dispositivos.id} className="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-sm bg-white gap-4">
+                                    <div className="flex flex-col min-w-0">
+                                        <h3 className="font-bold text-lg truncate">{dispositivos.dispositivo?.nombre}</h3>
+                                        <p className="text-sm text-gray-500 truncate">{dispositivos.dispositivo?.ubicacion}</p>
+                                        <div className="flex flex-wrap gap-4 mt-3">
                                             {temp !== undefined && (
-                                                <div className="flex items-center gap-1 text-sm">
+                                                <div className="flex items-center gap-1 text-sm shrink-0">
                                                     <Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">{temp ? temp : "No disponible"}°C</span>
                                                 </div>
                                             )}
                                             {humedad !== undefined && (
-                                                <div className="flex items-center gap-1 text-sm">
+                                                <div className="flex items-center gap-1 text-sm shrink-0">
                                                     <Wind size={16} className="text-blue-400" /> Hum: <span className="font-bold">{humedad ? humedad : "No disponible"}%</span>
                                                 </div>
                                             )}
                                             {presion !== undefined && (
-                                                <div className="flex items-center gap-1 text-sm">
+                                                <div className="flex items-center gap-1 text-sm shrink-0">
                                                     <CloudOff size={16} className="text-orange-500" /> Presión: <span className="font-bold">{presion ? presion : "No disponible"} hPa</span>
                                                 </div>
                                             )}
                                             {aqi !== undefined && (
-                                                <div className="flex items-center gap-1 text-sm">
+                                                <div className="flex items-center gap-1 text-sm shrink-0">
                                                     <Zap size={16} className="text-red-500" /> AQI: <span className="font-bold">{aqi}</span>
                                                 </div>
                                             )}
                                         </div>
                                         <p className="text-xs text-gray-400 mt-2">Última lectura: {dispositivos.dispositivo?.updated_at}</p>
                                     </div>
-                                    <div>
+                                    <div className="self-end sm:self-center">
                                         <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">online</span>
                                     </div>
                                 </div>
                             );
                         })}
-                        {/* Device 2 
-                        <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
-                            <div className="flex flex-col">
-                                <h3 className="font-bold text-lg">Sensor Sala de Servidores</h3>
-                                <p className="text-sm text-gray-500">Sótano - Datacenter</p>
-                                <div className="flex gap-6 mt-3">
-                                    <div className="flex items-center gap-1 text-sm"><Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">22.6°C</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Wind size={16} className="text-green-500" /> CO₂: <span className="font-bold">734 ppm</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><AlertTriangle size={16} className="text-red-500" /> CO: <span className="font-bold">10 ppm</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-orange-500" /> PM2.5: <span className="font-bold">9 µg/m³</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-pink-500" /> PM10: <span className="font-bold">68 µg/m³</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Activity size={16} className="text-blue-400" /> Humedad: <span className="font-bold">52%</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Zap size={16} className="text-purple-500" /> Voltaje: <span className="font-bold">5.09V</span></div>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-2">Última lectura: 01/06/2026, 22:00</p>
-                            </div>
-                            <div>
-                                <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold">warning</span>
-                            </div>
-                        </div>
-
-                        
-                        <div className="border rounded-lg p-4 flex justify-between items-center shadow-sm">
-                            <div className="flex flex-col">
-                                <h3 className="font-bold text-lg">Sensor Laboratorio</h3>
-                                <p className="text-sm text-gray-500">Planta 2 - Lab A</p>
-                                <div className="flex gap-6 mt-3">
-                                    <div className="flex items-center gap-1 text-sm"><Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">18.8°C</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Wind size={16} className="text-green-500" /> CO₂: <span className="font-bold">638 ppm</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><AlertTriangle size={16} className="text-red-500" /> CO: <span className="font-bold">10.4 ppm</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-orange-500" /> PM2.5: <span className="font-bold">3 µg/m³</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><CloudOff size={16} className="text-pink-500" /> PM10: <span className="font-bold">68 µg/m³</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Activity size={16} className="text-blue-400" /> Humedad: <span className="font-bold">69%</span></div>
-                                    <div className="flex items-center gap-1 text-sm"><Zap size={16} className="text-purple-500" /> Voltaje: <span className="font-bold">4.95V</span></div>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-2">Última lectura: 01/06/2026, 22:14</p>
-                            </div>
-                            <div>
-                                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">online</span>
-                            </div>
-                        </div> */}
                         
                         {/* Offline devices message */}
                         <div className="bg-red-50 text-red-500 border border-red-200 rounded-lg p-3 w-full">

@@ -41,7 +41,7 @@ export default function Login() {
     };
 
 return (
-    <div className="w-96 h-100 flex flex-col items-center p-4 rounded shadow-md  bg-white">
+    <div className="w-full max-w-sm mx-4 h-auto py-8 px-6 flex flex-col items-center rounded shadow-md  bg-white">
         <div className="mb-5 flex items-center gap-2">
             <Activity />
             <h1 className="text-2xl font-bold">IoT Monitor</h1>

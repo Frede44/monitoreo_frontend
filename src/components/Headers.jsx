@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Bell, AlertTriangle, X } from 'lucide-react';
+import { Activity, Bell, AlertTriangle, X, Menu } from 'lucide-react';
 import { AlertContext } from '../context/AlertContext';
 
 const formatTime = (isoString) => {
@@ -12,7 +12,7 @@ const formatTime = (isoString) => {
     }
 };
 
-export default function Headers() {
+export default function Headers({ onMenuToggle }) {
     const { alerts, removeAlert, clearAlerts } = useContext(AlertContext);
     const [popoverOpen, setPopoverOpen] = useState(false);
     const navigate = useNavigate();
@@ -57,6 +57,13 @@ export default function Headers() {
             `}} />
 
             <div className='flex items-center gap-2 flex-row'>
+                <button 
+                    onClick={onMenuToggle}
+                    className="md:hidden p-1 rounded hover:bg-gray-100 cursor-pointer mr-1 text-zinc-700"
+                    aria-label="Menu"
+                >
+                    <Menu className="w-6 h-6" />
+                </button>
                 <Activity className='text-black'/>
                 <h1 className="header__title text-black font-bold text-lg">IoT Monitor</h1>
             </div>

@@ -5,11 +5,12 @@ import Nav from '../components/Nav';
 import { LayoutPanelLeft, Cpu, User, Bell, FlaskConical, LogOut, Shield } from 'lucide-react';
 import LinkNav from '../components/LinkNav';
 import { AuthContext } from '../context/AuthContext';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AlertProvider } from '../context/AlertContext';
 
 export default function DashboardLayout() {
     const { user, logout } = useContext(AuthContext);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -21,9 +22,9 @@ export default function DashboardLayout() {
         <div>
             <AlertProvider>
                 <div className="h-screen bg-gray-50 flex flex-col">
-                    <Headers />
+                    <Headers onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
                     <div className="flex flex-1 overflow-hidden">
-                        <Nav>
+                        <Nav isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)}>
                             <div className="flex flex-col gap-4 flex-1">
                                 <LinkNav to="/panel" icon={<LayoutPanelLeft className="w-5" />}>
                                     Panel

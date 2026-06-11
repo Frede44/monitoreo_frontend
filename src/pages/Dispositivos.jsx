@@ -69,13 +69,13 @@ export default function Dispositivos() {
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div className="flex flex-row justify-between p-4">
-                <div >
-                    <h1 className="text-3xl font-bold">Gestionar Dispositivos</h1>
-                    <p>Administrar los dispositivos loT conectados</p>
-                </div>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 gap-4">
                 <div>
-                    <Button children="Ingresar Dispositivo" estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={handleAgregarDispositivo} />
+                    <h1 className="text-2xl sm:text-3xl font-bold">Gestionar Dispositivos</h1>
+                    <p className="text-sm text-gray-500">Administrar los dispositivos IoT conectados</p>
+                </div>
+                <div className="w-full sm:w-auto">
+                    <Button children="Ingresar Dispositivo" estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto" onClick={handleAgregarDispositivo} />
                 </div>
             </div>
 

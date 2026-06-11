@@ -77,89 +77,85 @@ export default function DialogAlertas({ isOpen, onClose,  }) {
     };
 
     return (
-
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-            <div>
-                <View title="Nueva Alerta" text="Configura una nueva alerta de monitorización" estilos="w-96 p-6">
-                    <div onClick={(e) => e.stopPropagation()}>
-                        <form onSubmit={handleSubmit}>
-                            <div className="mb-4">
-                                <label htmlFor="Nombre de la alerta" className="block text-sm font-medium text-black">Nombre de la alerta</label>
-                                <input 
-                                    type="text" 
-                                    id="Nombre de la alerta" 
-                                    placeholder="Ej: CO2 Alto - Oficina" 
-                                    value={nombre}
-                                    onChange={(e) => setNombre(e.target.value)}
-                                    className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-                                    required
-                                />
-                            </div >
-                            <div className="mb-4">
-                                <label htmlFor="Dispositivo" className="block text-sm font-medium text-black">Dispositivo</label>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs" onClick={onClose}>
+            <div onClick={(e) => e.stopPropagation()} className="max-w-md w-full m-4">
+                <View title="Nueva Alerta" text="Configura una nueva alerta de monitorización" estilos="p-6">
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-4">
+                            <label htmlFor="Nombre de la alerta" className="block text-sm font-medium text-black">Nombre de la alerta</label>
+                            <input 
+                                type="text" 
+                                id="Nombre de la alerta" 
+                                placeholder="Ej: CO2 Alto - Oficina" 
+                                value={nombre}
+                                onChange={(e) => setNombre(e.target.value)}
+                                className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                                required
+                            />
+                        </div >
+                        <div className="mb-4">
+                            <label htmlFor="Dispositivo" className="block text-sm font-medium text-black">Dispositivo</label>
+                            <select 
+                                id="Dispositivo" 
+                                value={dispositivoId}
+                                onChange={(e) => setDispositivoId(e.target.value)}
+                                className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            >
+                                <option value="">Seleccionar dispositivo</option>
+                                {dispositivos.map((dispositivo) => (
+                                    <option key={dispositivo.dispositivo.id} value={dispositivo.dispositivo.id}>{dispositivo.dispositivo.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="Tipo de alerta" className="block text-sm font-medium text-black">Tipo de alerta</label>
                                 <select 
-                                    id="Dispositivo" 
-                                    value={dispositivoId}
-                                    onChange={(e) => setDispositivoId(e.target.value)}
+                                    id="Tipo de alerta" 
+                                    value={metricaId}
+                                    onChange={(e) => setMetricaId(e.target.value)}
                                     className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     required
                                 >
-                                    <option value="">Seleccionar dispositivo</option>
-                                    {dispositivos.map((dispositivo) => (
-                                        <option key={dispositivo.dispositivo.id} value={dispositivo.dispositivo.id}>{dispositivo.dispositivo.nombre}</option>
+                                    <option value="">Seleccionar métrica</option>
+                                    {metricas.map((metrica) => (
+                                        <option key={metrica.id} value={metrica.id}>{metrica.nombre}</option>
                                     ))}
                                 </select>
+                        </div>
+                        <div className="mb-4 grid grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="cantidad_min " className="block text-sm font-medium text-black   ">Valor minimo</label>
+                                <input 
+                                    type="number" 
+                                    id="cantidad_min" 
+                                    placeholder="Ej: 200" 
+                                    value={cantidad_min}
+                                    onChange={(e) => setCantidadMin(e.target.value)}
+                                    className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                                    required
+                                />
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="Tipo de alerta" className="block text-sm font-medium text-black">Tipo de alerta</label>
-                                    <select 
-                                        id="Tipo de alerta" 
-                                        value={metricaId}
-                                        onChange={(e) => setMetricaId(e.target.value)}
-                                        className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        required
-                                    >
-                                        <option value="">Seleccionar métrica</option>
-                                        {metricas.map((metrica) => (
-                                            <option key={metrica.id} value={metrica.id}>{metrica.nombre}</option>
-                                        ))}
-                                    </select>
+                            <div >
+                                <label htmlFor="cantidad_max " className="block text-sm font-medium text-black   ">Valor maximo</label>
+                                <input 
+                                    type="number" 
+                                    id="cantidad_max" 
+                                    placeholder="Ej: 1000" 
+                                    value={cantidad_max}
+                                    onChange={(e) => setCantidadMax(e.target.value)}
+                                    className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                                    required
+                                />
                             </div>
-                            <div className="mb-4 grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="cantidad_min " className="block text-sm font-medium text-black   ">Valor minimo</label>
-                                    <input 
-                                        type="number" 
-                                        id="cantidad_min" 
-                                        placeholder="Ej: 200" 
-                                        value={cantidad_min}
-                                        onChange={(e) => setCantidadMin(e.target.value)}
-                                        className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-                                        required
-                                    />
-                                </div>
-                                <div >
-                                    <label htmlFor="cantidad_max " className="block text-sm font-medium text-black   ">Valor maximo</label>
-                                    <input 
-                                        type="number" 
-                                        id="cantidad_max" 
-                                        placeholder="Ej: 1000" 
-                                        value={cantidad_max}
-                                        onChange={(e) => setCantidadMax(e.target.value)}
-                                        className="mt-1 p-2 block w-full border border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div className="flex justify-end gap-2">
-                                <Button type="button" onClick={onClose} estile="border ">Cancelar</Button>
-                                <Button type="submit"  estile="bg-black text-white ">Crear Alerta</Button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        
+                        <div className="flex justify-end gap-2">
+                            <Button type="button" onClick={onClose} estile="border ">Cancelar</Button>
+                            <Button type="submit"  estile="bg-black text-white ">Crear Alerta</Button>
+                        </div>
+                    </form>
                 </View>
-
             </div>
         </div>
     )

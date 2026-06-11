@@ -70,32 +70,32 @@ export default function Metricas() {
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div className="flex flex-row justify-between p-4">
-                <div >
-                    <h1 className="text-3xl font-bold">Gestionar Metricas</h1>
-                    <p>Define las métricas que tus dispositivos IoT van a medir.</p>
-                </div>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 gap-4">
                 <div>
-                    <Button children="Ingresar Métrica" estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={handleAgregarMetrica} />
+                    <h1 className="text-2xl sm:text-3xl font-bold">Gestionar Metricas</h1>
+                    <p className="text-sm text-gray-500">Define las métricas que tus dispositivos IoT van a medir.</p>
+                </div>
+                <div className="w-full sm:w-auto">
+                    <Button children="Ingresar Métrica" estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto" onClick={handleAgregarMetrica} />
                 </div>
             </div>
 
             <div className="flex flex-col p-4 gap-4">
                 {metricas.map((metrica) => (
-                    <div className="flex w-full justify-between bg-white items-center p-4 rounded border border-gray-300"  key={metrica.id}>
+                    <div className="flex flex-col sm:flex-row w-full justify-between bg-white items-start sm:items-center p-4 rounded border border-gray-300 gap-4"  key={metrica.id}>
                         <div className="flex items-center gap-4">
-                            <div className="p-2 bg-gray-200 rounded">
+                            <div className="p-2 bg-gray-200 rounded shrink-0">
                                 <FlaskConical className="w-5" />
                             </div>
-                            <div className="flex flex-col">
-                                <p className="font-bold">{metrica.nombre}</p>
-                                <div className="flex gap-2 items-center">
-                                    <p>Unidad: </p>
-                                    <p className="bg-gray-200 pt-1 pb-1 pr-2 pl-2 rounded-xl">{metrica.unidad}</p>
+                            <div className="flex flex-col min-w-0">
+                                <p className="font-bold truncate">{metrica.nombre}</p>
+                                <div className="flex gap-2 items-center flex-wrap">
+                                    <p className="text-sm text-gray-500">Unidad: </p>
+                                    <p className="bg-gray-200 pt-0.5 pb-0.5 pr-2 pl-2 rounded-xl text-xs font-semibold">{metrica.unidad}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 w-full sm:w-auto justify-end">
                             <Button children={<Trash2 className="text-red-500 w-5" />} estile="border border-gray-300 text-red-500 hover:bg-red-100 hover:text-white rounded-xm" onClick={() => {
                                 handleEliminarMetrica(metrica.id);
                             }} />

@@ -66,15 +66,15 @@ export default function Roles() {
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div className="flex flex-row justify-between p-4 items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Gestionar Roles y Permisos</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Gestionar Roles y Permisos</h1>
                     <p className="text-gray-500 text-sm mt-1">Cree y configure los roles y permisos del sistema</p>
                 </div>
-                <div>
+                <div className="w-full sm:w-auto">
                     <Button 
                         children="Agregar Rol" 
-                        estile="bg-black hover:bg-zinc-800 text-white font-semibold py-2.5 px-5 rounded-lg text-sm transition-colors cursor-pointer" 
+                        estile="bg-black hover:bg-zinc-800 text-white font-semibold py-2.5 px-5 rounded-lg text-sm transition-colors cursor-pointer w-full sm:w-auto text-center" 
                         onClick={handleAgregarRol} 
                     />
                 </div>

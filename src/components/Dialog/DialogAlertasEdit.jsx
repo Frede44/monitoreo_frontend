@@ -83,9 +83,9 @@ export default function DialogAlertasEdit({ isOpen, onClose, alerta, onAlertaEdi
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-            <div onClick={(e) => e.stopPropagation()}>
-                <View title="Editar Alerta" text="Modifica los detalles de la alerta de monitorización" estilos="w-96 p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs" onClick={onClose}>
+            <div onClick={(e) => e.stopPropagation()} className="max-w-md w-full m-4">
+                <View title="Editar Alerta" text="Modifica los detalles de la alerta de monitorización" estilos="p-6">
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label htmlFor="Nombre de la alerta" className="block text-sm font-medium text-black">Nombre de la alerta</label>

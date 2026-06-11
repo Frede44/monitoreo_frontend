@@ -71,13 +71,13 @@ export default function Usuarios() {
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div className="flex flex-row justify-between p-4">
-                <div >
-                    <h1 className="text-3xl font-bold">Gestionar Usuarios</h1>
-                    <p>Administrar los usuarios del sistema</p>
-                </div>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 gap-4">
                 <div>
-                    <Button children="Ingresar Usuario" estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={handleAgregarUsuario} />
+                    <h1 className="text-2xl sm:text-3xl font-bold">Gestionar Usuarios</h1>
+                    <p className="text-sm text-gray-500">Administrar los usuarios del sistema</p>
+                </div>
+                <div className="w-full sm:w-auto">
+                    <Button children="Ingresar Usuario" estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto" onClick={handleAgregarUsuario} />
                 </div>
             </div>
 

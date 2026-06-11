@@ -76,16 +76,16 @@ export function Alertas() {
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-bold ">Gestión de Alertas</h1>
-                    <p>Configura alertas y umbrales de monitorización</p>
+                    <p className="text-sm text-gray-500">Configura alertas y umbrales de monitorización</p>
                 </div>
-                <Button estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={openDialog}>
+                <Button estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto" onClick={openDialog}>
                     Nueva Alerta
                 </Button>
             </div>
-            <div className="grid grid-cols-3 gap-4 items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-center">
                 {alertas.map((alerta) => (
                     <CardAlertas 
                         key={alerta.id}
