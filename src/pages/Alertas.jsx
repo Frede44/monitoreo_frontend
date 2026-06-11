@@ -85,7 +85,7 @@ export function Alertas() {
                     Nueva Alerta
                 </Button>
             </div>
-            <div className="grid grid-cols-3 gap-4 flex items-center">
+            <div className="grid grid-cols-3 gap-4 items-center">
                 {alertas.map((alerta) => (
                     <CardAlertas 
                         key={alerta.id}
