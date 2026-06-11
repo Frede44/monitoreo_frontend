@@ -100,9 +100,10 @@ export function Panel() {
                             
                             const nuevaLectura = {
                                 time: formattedTime,
-                                temp: nuevosValores[1] ?? 0,
-                                humedad: nuevosValores[2] ?? 0,
-                                presion: nuevosValores[3] ?? 0,
+                                monoxido_carbono: nuevosValores[1] ?? 0,
+                                temperatura: nuevosValores[2] ?? 0,
+                                humedad: nuevosValores[3] ?? 0,
+                                presion: nuevosValores[4] ?? 0,
                                 aqi: nuevosValores[4] ?? 0,
                                 co2: 400 + (nuevosValores[4] ?? 0) * 3,
                                 pm25: nuevosValores[4] ? Math.round(nuevosValores[4] * 0.15) : 0,
@@ -196,19 +197,19 @@ export function Panel() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-3">
                 {/* Aquí puedes agregar más tarjetas con diferentes métricas o información relevante */}
                 <Cards title="Dispositivos" value={countDispositivos.count} icon={<Activity />} text="Dispositivos en funcionamiento" color="text-green-500" />
-                <Cards title="Temperatura" value={`${datosSensores[1] ?? 0} °C`} icon={<Thermometer />} text="Promedio de temperatura" color="text-yellow-500" />
-                <Cards title="Humedad" value={`${datosSensores[2] ?? 0} %`} icon={<Wind />} text="Nivel de humedad" color="text-blue-500" />
-                <Cards title="Presión" value={`${datosSensores[3] ?? 0} hPa`} icon={<CloudOff />} text="Presión atmosférica" color="text-orange-500" />
-                <Cards title="Calidad del Aire" value={`${datosSensores[4] ?? 0} AQI`} icon={<Zap />} text="Índice de calidad del aire" color="text-red-500" />
+                <Cards title="Monoxido de Carbono" value={`${datosSensores[1] ?? 0} ppm`} icon={<Thermometer />} text="Promedio de temperatura" color="text-yellow-500" />
+                <Cards title="Temperatura" value={`${datosSensores[2] ?? 0} °C`} icon={<Wind />} text="Nivel de humedad" color="text-blue-500" />
+                <Cards title="Humedad" value={`${datosSensores[3] ?? 0} %`} icon={<CloudOff />} text="Presión atmosférica" color="text-orange-500" />
+                <Cards title="Presión" value={`${datosSensores[4] ?? 0} hPa`} icon={<Zap />} text="Índice de calidad del aire" color="text-red-500" />
 
             </div>
 
             <View title="Monitoreo en tiempo real" text="Valores actuales del dispositivo seleccionado" estilos="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 justify-items-center p-2">
                 {/* Aquí puedes agregar gráficos o tablas para mostrar datos más detallados */}
-                <Monitor valor={datosSensores[1] ?? 0} maxValor={100} unidad="°C" magnitud="Temperatura" />
-                <Monitor valor={datosSensores[2] ?? 0} maxValor={100} unidad="%" magnitud="Humedad" />
-                <Monitor valor={datosSensores[3] ?? 0} maxValor={100} unidad="hPa" magnitud="Presión" />
-                <Monitor valor={datosSensores[4] ?? 0} maxValor={100} unidad="AQI" magnitud="Calidad del Aire" />
+                <Monitor valor={datosSensores[1] ?? 0} maxValor={100} unidad="ppm" magnitud="Monoxido de Carbono" />
+                <Monitor valor={datosSensores[2] ?? 0} maxValor={100} unidad="°C" magnitud="Temperatura" />
+                <Monitor valor={datosSensores[3] ?? 0} maxValor={100} unidad="%" magnitud="Humedad" />
+                <Monitor valor={datosSensores[4] ?? 0} maxValor={100} unidad="hPa" magnitud="Presión" />
             </View>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3">
@@ -260,10 +261,10 @@ export function Panel() {
 
                         {datosDispositivos.map(dispositivos => {
                             const matchingDato = datos.find(d => d.datos?.dispositivo?.id === dispositivos.dispositivo?.id);
-                            const temp = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 1)?.valor;
-                            const humedad = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 2)?.valor;
-                            const presion = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 3)?.valor;
-                            const aqi = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 4)?.valor;
+                            const monoxido_carbono = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 1)?.valor;
+                            const temperatura = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 2)?.valor;
+                            const humedad = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 3)?.valor;
+                            const presion = matchingDato?.datos?.metricas?.find(m => m.tipo_metrica_id === 4)?.valor;
 
                             return (
                                 <div key={dispositivos.id} className="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-sm bg-white gap-4">
@@ -271,9 +272,14 @@ export function Panel() {
                                         <h3 className="font-bold text-lg truncate">{dispositivos.dispositivo?.nombre}</h3>
                                         <p className="text-sm text-gray-500 truncate">{dispositivos.dispositivo?.ubicacion}</p>
                                         <div className="flex flex-wrap gap-4 mt-3">
-                                            {temp !== undefined && (
+                                            {monoxido_carbono !== undefined && (
                                                 <div className="flex items-center gap-1 text-sm shrink-0">
-                                                    <Thermometer size={16} className="text-blue-500" /> Temp: <span className="font-bold">{temp ? temp : "No disponible"}°C</span>
+                                                    <Thermometer size={16} className="text-blue-500" /> Monoxido de Carbono: <span className="font-bold">{monoxido_carbono ? monoxido_carbono : "No disponible"} ppm</span>
+                                                </div>
+                                            )}
+                                            {temperatura !== undefined && (
+                                                <div className="flex items-center gap-1 text-sm shrink-0">
+                                                    <Thermometer size={16} className="text-blue-500" /> Temperatura: <span className="font-bold">{temperatura ? temperatura : "No disponible"}°C</span>
                                                 </div>
                                             )}
                                             {humedad !== undefined && (
