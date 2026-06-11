@@ -5,7 +5,7 @@ import Button from "../components/Button";
 import { CardAlertas } from "../components/Cards/CardsAlertas";
 import DialogAlertas from "../components/Dialog/DialogAlertas";
 import DialogAlertasEdit from "../components/Dialog/DialogAlertasEdit";
-import { getAlertasApi, cambiarEstadoAlertaApi } from "../services/alertaService";
+import { getAlertasApi, cambiarEstadoAlertaApi, deleteAlertasApi } from "../services/alertaService";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
@@ -21,8 +21,8 @@ export function Alertas() {
         setIsOpen(true);
     };
 
-    const fetchAlertas = async () => {
-        setLoading(true);
+    const fetchAlertas = async (showLoading = true) => {
+        if (showLoading) setLoading(true);
         try {
             const data = await getAlertasApi();
             setAlertas(data);
@@ -32,12 +32,23 @@ export function Alertas() {
                 navigate('/login');
             }
         } finally {
-            setLoading(false);
+            if (showLoading) setLoading(false);
+        }
+    };
+
+    const handleDeleteAlerta = async (alertaId) => {
+        try {
+            await deleteAlertasApi(alertaId);
+            setAlertas((prevAlertas) =>
+                prevAlertas.filter((alerta) => (alerta.trigger?.id || alerta.id) !== alertaId)
+            );
+        } catch (error) {
+            console.error("Error al eliminar la alerta:", error);
         }
     };
 
     useEffect(() => {
-        fetchAlertas();
+        fetchAlertas(true);
     }, []);
 
     const handleToggleEstado = async (alertaId) => {
@@ -82,7 +93,7 @@ export function Alertas() {
                     <p className="text-sm text-gray-500">Configura alertas y umbrales de monitorización</p>
                 </div>
                 <Button estile="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto" onClick={openDialog}>
-                    Nueva Alerta
+					Nueva Alerta
                 </Button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-center">
@@ -99,7 +110,9 @@ export function Alertas() {
                         onClickEditar={() => {
                             setAlertaSeleccionada(alerta);
                             setIsEditOpen(true);
-                        }}
+                        }}  
+                        onClickEliminar={() => handleDeleteAlerta(alerta.trigger?.id || alerta.id)}
+                    
                     />
                 ))}
             </div>
@@ -108,7 +121,7 @@ export function Alertas() {
                 <DialogAlertas 
                     isOpen={isOpen}
                     onClose={() => setIsOpen(false)}  
-                   
+                    onAlertaCreada={() => fetchAlertas(false)}
                 />
             )}
 
@@ -120,7 +133,7 @@ export function Alertas() {
                         setAlertaSeleccionada(null);
                     }}  
                 alerta={alertaSeleccionada}
-                    onAlertaEditada={fetchAlertas}
+                    onAlertaEditada={() => fetchAlertas(false)}
                 />
             )}
         </div>

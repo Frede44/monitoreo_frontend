@@ -7,7 +7,7 @@ import { metricasApi, postAlertasApi } from "../../services/alertaService";
 
 
 
-export default function DialogAlertas({ isOpen, onClose,  }) {
+export default function DialogAlertas({ isOpen, onClose, onAlertaCreada }) {
     const [dispositivos, setDispositivos] = useState([]);
     const [metricas, setMetricas] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +61,9 @@ export default function DialogAlertas({ isOpen, onClose,  }) {
                 cantidad_max: Number(cantidad_max),
                 cantidad_min: Number(cantidad_min)
             });
-            
+            if (onAlertaCreada) {
+                onAlertaCreada();
+            }
         } catch (error) {
             console.error('Error al crear la alerta:', error);
         } finally {

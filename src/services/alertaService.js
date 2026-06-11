@@ -104,3 +104,23 @@ export const updateAlertasApi = async (id, alerta) => {
         throw error;
     }
 }
+export const deleteAlertasApi = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}/triggers/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Error al eliminar la alerta');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error al eliminar la alerta:', error);
+        throw error;
+    }
+}
