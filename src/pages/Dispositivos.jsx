@@ -90,7 +90,7 @@ export default function Dispositivos() {
                             nombre={dispositivo.dispositivo.nombre}
                             ubicacion={dispositivo.dispositivo.ubicacion}
                             mac={dispositivo.dispositivo.MAC}
-                            token={tokenParaMostrar}
+                            token={dispositivo.dispositivo.token_id}
                             estado={dispositivo.dispositivo.estado ? "En línea" : "Desconectado"}
                             onClickEditar={() => handleEditarDispositivo(dispositivo)}
                             onClickEliminar={() => handleEliminarDispositivo(dispositivo.dispositivo.id)}
