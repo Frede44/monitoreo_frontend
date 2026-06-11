@@ -292,11 +292,7 @@ export function Panel() {
                                                     <CloudOff size={16} className="text-orange-500" /> Presión: <span className="font-bold">{presion ? presion : "No disponible"} hPa</span>
                                                 </div>
                                             )}
-                                            {aqi !== undefined && (
-                                                <div className="flex items-center gap-1 text-sm shrink-0">
-                                                    <Zap size={16} className="text-red-500" /> AQI: <span className="font-bold">{aqi}</span>
-                                                </div>
-                                            )}
+                                            
                                         </div>
                                         <p className="text-xs text-gray-400 mt-2">Última lectura: {dispositivos.dispositivo?.updated_at}</p>
                                     </div>
