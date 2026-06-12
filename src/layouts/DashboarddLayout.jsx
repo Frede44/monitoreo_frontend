@@ -2,7 +2,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import Headers from '../components/Headers';
 import Nav from '../components/Nav';
-import { LayoutPanelLeft, Cpu, User, Bell, FlaskConical, LogOut, Shield } from 'lucide-react';
+import { LayoutPanelLeft, Cpu, User, Bell, FlaskConical, LogOut, Shield, TrendingUp } from 'lucide-react';
 import LinkNav from '../components/LinkNav';
 import { AuthContext } from '../context/AuthContext';
 import { useContext, useState } from 'react';
@@ -43,6 +43,9 @@ export default function DashboardLayout() {
                                 </LinkNav>
                                 <LinkNav to="/panel/roles" icon={<Shield className="w-5" />}>
                                     Roles
+                                </LinkNav>
+                                <LinkNav to="/panel/graficas" icon={<TrendingUp className="w-5" />}>
+                                    Historial Gráfico
                                 </LinkNav>
                             </div>
 
